@@ -1,0 +1,12 @@
+Board Information Report
+Filename     : F:\MarsCloud\MyFortune\project\product\WorldEdit_1.0\PCB\创世一号\创世一号.PcbDoc
+Date         : 2020/10/8
+Time         : 22:41:39
+Time Elapsed : 00:00:00
+
+Routing Information
+    Routing completion, 100.00%
+    Connections, 579
+    Connections routed, 579
+    Connections remaining, 0
+count : 4
