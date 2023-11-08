@@ -1,12 +1,12 @@
 .\objects\stm32f10x_sdio.o: ..\FWLib\src\stm32f10x_sdio.c
 .\objects\stm32f10x_sdio.o: ..\FWLib\inc\stm32f10x_sdio.h
-.\objects\stm32f10x_sdio.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\stm32f10x.h
+.\objects\stm32f10x_sdio.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h
 .\objects\stm32f10x_sdio.o: ..\CORE\core_cm3.h
-.\objects\stm32f10x_sdio.o: D:\Program Files\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-.\objects\stm32f10x_sdio.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\system_stm32f10x.h
+.\objects\stm32f10x_sdio.o: D:\TianyiSync\Portable\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\objects\stm32f10x_sdio.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\system_stm32f10x.h
 .\objects\stm32f10x_sdio.o: ..\USER\stm32f10x_conf.h
 .\objects\stm32f10x_sdio.o: ..\FWLib\inc\stm32f10x_dma.h
-.\objects\stm32f10x_sdio.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\stm32f10x.h
+.\objects\stm32f10x_sdio.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h
 .\objects\stm32f10x_sdio.o: ..\FWLib\inc\stm32f10x_exti.h
 .\objects\stm32f10x_sdio.o: ..\FWLib\inc\stm32f10x_flash.h
 .\objects\stm32f10x_sdio.o: ..\FWLib\inc\stm32f10x_gpio.h

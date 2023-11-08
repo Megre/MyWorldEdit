@@ -28,21 +28,22 @@
 #define myKeyBoard_col13_GPIOPort	GPIOC
 #define myKeyBoard_col14_GPIOPort	GPIOC
 #define myKeyBoard_col15_GPIOPort	GPIOC
+
 #define myKeyBoard_col0_GPIOPin		GPIO_Pin_12
 #define myKeyBoard_col1_GPIOPin		GPIO_Pin_13
 #define myKeyBoard_col2_GPIOPin		GPIO_Pin_14
 #define myKeyBoard_col3_GPIOPin		GPIO_Pin_15
-#define myKeyBoard_col4_GPIOPin		GPIO_Pin_0
-#define myKeyBoard_col5_GPIOPin		GPIO_Pin_1
-#define myKeyBoard_col6_GPIOPin		GPIO_Pin_2
-#define myKeyBoard_col7_GPIOPin		GPIO_Pin_3
+#define myKeyBoard_col4_GPIOPin		GPIO_Pin_6
+#define myKeyBoard_col5_GPIOPin		GPIO_Pin_7
+#define myKeyBoard_col6_GPIOPin		GPIO_Pin_8
+#define myKeyBoard_col7_GPIOPin		GPIO_Pin_9
 #define myKeyBoard_col8_GPIOPin		GPIO_Pin_4
 #define myKeyBoard_col9_GPIOPin		GPIO_Pin_5
-#define myKeyBoard_col10_GPIOPin	GPIO_Pin_6
-#define myKeyBoard_col11_GPIOPin	GPIO_Pin_7
-#define myKeyBoard_col12_GPIOPin	GPIO_Pin_8
-#define myKeyBoard_col13_GPIOPin	GPIO_Pin_9
-#define myKeyBoard_col14_GPIOPin	GPIO_Pin_10
+#define myKeyBoard_col10_GPIOPin	GPIO_Pin_10
+#define myKeyBoard_col11_GPIOPin	GPIO_Pin_0
+#define myKeyBoard_col12_GPIOPin	GPIO_Pin_1
+#define myKeyBoard_col13_GPIOPin	GPIO_Pin_2
+#define myKeyBoard_col14_GPIOPin	GPIO_Pin_3
 #define myKeyBoard_col15_GPIOPin	GPIO_Pin_11
 
 #define myKeyBoard_ControlKey 0x00
@@ -51,25 +52,28 @@
 #define xxCK	myKeyBoard_ControlKey 
 #define xxSK	myKeyBoard_SpecialKey 
 
+#define MENU_STATE 	myKeyBoard_KeyState[5][5]
+#define FN_STATE 		myKeyBoard_KeyState[5][6]
+
 const char * myKeyBoard_KeyMap_Name[6][16] = 
 {
-	"Esc","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","PrtSc","ScrollLock","PauseBreak",
-	"~","!","@","#","$","%","^","&","*","(",")","-","+","BackSpace","Insert","Home",
-	"Tab","Q","W","E","R","T","Y","U","I","O","P","{","}","|","Delete","End",
-	"CapsLock","A","S","D","F","G","H","J","K","L",";","'","Enter","","","PageUp",
-	"LShift","Z","X","C","V","B","N","M",",",".","/","RShift","Up","","","PageDown",
-	"LCtrl","Win","LAlt","Space","RAlt","FN","Menu","RCtrl","Left","Down","Right","","","","",""
+	"Esc","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12","PrtSc","Delete","",
+	"Home","~","!","@","#","$","%","^","&","*","(",")","-","+","BackSpace","",
+	"PageUp","Tab","Q","W","E","R","T","Y","U","I","O","P","{","}","Enter","",
+	"PageDown","CapsLock","A","S","D","F","G","H","J","K","L",";","'","|","","",
+	"End","LShift","Z","X","C","V","B","N","M",",",".","/","RShift","Up","","",
+	"Sleep","LCtrl","Win","LAlt","Space","Menu","FN","Space","RAlt","RCtrl","Left","Right","Down","","",""
 };
 
 
 const unsigned char myKeyBoard_KeyMap_ATValue[6][16] = 
 {
-	0x29,0x3A,0x3B,0x3C,0x3D,0x3E,0x3F,0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x47,0x48,
-	0x35,0x1E,0x1F,0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x2D,0x2E,0x2A,0x49,0x4A,
-	0x2B,0x14,0x1A,0x08,0x15,0x17,0x1C,0x18,0x0C,0x12,0x13,0x2F,0x30,0x31,0x4C,0x4D,
-	0x39,0x04,0x16,0x07,0x09,0x0A,0x0B,0x0D,0x0E,0x0F,0x33,0x34,0x28,0x00,0x00,0x4B,
-	xxCK,0x1D,0x1B,0x06,0x19,0x05,0x11,0x10,0x36,0x37,0x38,xxCK,0x52,0x00,0x00,0x4E,
-	xxCK,xxCK,xxCK,0x2C,xxCK,xxSK,xxSK,xxCK,0x50,0x51,0x4F,0x00,0x00,0x00,0x00,0x00,
+	0x29,0x3A,0x3B,0x3C,0x3D,0x3E,0x3F,0x40,0x41,0x42,0x43,0x44,0x45,0x46,0x4C,0x00,
+	0x4A,0x35,0x1E,0x1F,0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x2D,0x2E,0x2A,0x00,
+	0x4B,0x2B,0x14,0x1A,0x08,0x15,0x17,0x1C,0x18,0x0C,0x12,0x13,0x2F,0x30,0x28,0x00,
+	0x4E,0x39,0x04,0x16,0x07,0x09,0x0A,0x0B,0x0D,0x0E,0x0F,0x33,0x34,0x31,0x00,0x00,
+	0x4D,xxCK,0x1D,0x1B,0x06,0x19,0x05,0x11,0x10,0x36,0x37,0x38,xxCK,0x52,0x00,0x00,
+	0x82,xxCK,xxCK,xxCK,0x2C,xxSK,xxSK,0x2C,xxCK,xxCK,0x50,0x4F,0x51,0x00,0x00,0x00
 };
 
 
@@ -198,7 +202,7 @@ void myKeyBoard_UpdataATDataPack()
 	u8 AlreadeyExistflag = 0;
 	ATKeyControlByte5 = 0x00;//清楚控制按键键值
 	//u8 specialKeyenum = 0;
-	if(myKeyBoard_KeyState[5][5] == KEYPRESSED)//判断FN键是否被按下
+	if(FN_STATE == KEYPRESSED)//判断FN键是否被按下
 	{
 		if(myKeyBoard_JudgeKeyPressWithName("F8"))
 		{
@@ -227,11 +231,11 @@ void myKeyBoard_UpdataATDataPack()
 			specialKeyenum = none;//
 			//return;
 		}			
-	}
+	} // FN END
 	
-	if(myKeyBoard_KeyState[5][6] == KEYPRESSED)//判断Menu键是否被按下
+	if(MENU_STATE == KEYPRESSED)//判断Menu键是否被按下
 	{
-		if(myKeyBoard_JudgeKeyPressWithName("PauseBreak"))
+		if(myKeyBoard_JudgeKeyPressWithName("F6"))
 		{
 			if(!g_USBModeFlag)
 			{
@@ -333,7 +337,7 @@ void myKeyBoard_UpdataATDataPack()
 //				TIM_Cmd(TIM3,ENABLE);
 //			}
 //		}
-	}
+	} // MENU END
 		
 	for(i = 0; i < 6 ; i++)//判断上次按下的按键现在是否还被按下,若否则将ATKeyData的数据清零
 	{
@@ -378,8 +382,10 @@ void myKeyBoard_UpdataATDataPack()
 							}
 						}
 					}
-					else {
-						AlreadeyExistflag = 0;}
+					else 
+					{
+						AlreadeyExistflag = 0;
+					}
 					myKeyBoard_KeyIsControl = 1;
 				}
 			}

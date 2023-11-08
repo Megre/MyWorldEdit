@@ -1,11 +1,11 @@
 .\objects\delay.o: ..\USER\delay.c
-.\objects\delay.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\stm32f10x.h
+.\objects\delay.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h
 .\objects\delay.o: ..\CORE\core_cm3.h
-.\objects\delay.o: D:\Program Files\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-.\objects\delay.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\system_stm32f10x.h
+.\objects\delay.o: D:\TianyiSync\Portable\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\objects\delay.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\system_stm32f10x.h
 .\objects\delay.o: ..\USER\stm32f10x_conf.h
 .\objects\delay.o: ..\FWLib\inc\stm32f10x_dma.h
-.\objects\delay.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\stm32f10x.h
+.\objects\delay.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h
 .\objects\delay.o: ..\FWLib\inc\stm32f10x_exti.h
 .\objects\delay.o: ..\FWLib\inc\stm32f10x_flash.h
 .\objects\delay.o: ..\FWLib\inc\stm32f10x_gpio.h

@@ -1,12 +1,12 @@
 .\objects\btk05.o: ..\DRIVER\BTK05.c
 .\objects\btk05.o: ..\USER\main.h
-.\objects\btk05.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\stm32f10x.h
+.\objects\btk05.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h
 .\objects\btk05.o: ..\CORE\core_cm3.h
-.\objects\btk05.o: D:\Program Files\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-.\objects\btk05.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\system_stm32f10x.h
+.\objects\btk05.o: D:\TianyiSync\Portable\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\objects\btk05.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\system_stm32f10x.h
 .\objects\btk05.o: ..\USER\stm32f10x_conf.h
 .\objects\btk05.o: ..\FWLib\inc\stm32f10x_dma.h
-.\objects\btk05.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\stm32f10x.h
+.\objects\btk05.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h
 .\objects\btk05.o: ..\FWLib\inc\stm32f10x_exti.h
 .\objects\btk05.o: ..\FWLib\inc\stm32f10x_flash.h
 .\objects\btk05.o: ..\FWLib\inc\stm32f10x_gpio.h

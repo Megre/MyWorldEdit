@@ -1,13 +1,13 @@
 .\objects\usb_endp.o: ..\USBLib\CONFIG\usb_endp.c
 .\objects\usb_endp.o: ..\USBLib\CONFIG\hw_config.h
 .\objects\usb_endp.o: ..\USBLib\CONFIG\platform_config.h
-.\objects\usb_endp.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\stm32f10x.h
+.\objects\usb_endp.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h
 .\objects\usb_endp.o: ..\CORE\core_cm3.h
-.\objects\usb_endp.o: D:\Program Files\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-.\objects\usb_endp.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\system_stm32f10x.h
+.\objects\usb_endp.o: D:\TianyiSync\Portable\Keil5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+.\objects\usb_endp.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\system_stm32f10x.h
 .\objects\usb_endp.o: ..\USER\stm32f10x_conf.h
 .\objects\usb_endp.o: ..\FWLib\inc\stm32f10x_dma.h
-.\objects\usb_endp.o: D:\Program Files\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.0.0\Device\Include\stm32f10x.h
+.\objects\usb_endp.o: D:\TianyiSync\Portable\Keil5\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include\stm32f10x.h
 .\objects\usb_endp.o: ..\FWLib\inc\stm32f10x_exti.h
 .\objects\usb_endp.o: ..\FWLib\inc\stm32f10x_flash.h
 .\objects\usb_endp.o: ..\FWLib\inc\stm32f10x_gpio.h

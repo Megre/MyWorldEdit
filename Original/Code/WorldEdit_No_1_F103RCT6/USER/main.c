@@ -15,18 +15,17 @@ unsigned char system_Status = 1;  //1:运行中，0：休眠中
 unsigned char g_Flag = 0;
 uint8_t ledLogoPWM = 80;
 int8_t ledLogoPWMDelt = 0;
-bool g_USBModeFlag = FALSE;
+bool g_USBModeFlag = TRUE;
 
 
 int main()
 {
-	//sysInit();
-	BTK05_Wake();//唤醒BTK05
-	
+	sysInit();
+	BTK05_Wake();//唤醒BTK05B	
 
 	while(1)
 	{ 
-		if(g_USBModeFlag)//USB模式下
+		if(g_USBModeFlag) //USB模式下 
 		{
 			if(sleepTime1SCounter <= 1000)
 			{
@@ -77,14 +76,14 @@ int main()
 					BTK05_UART_SendKeyData(BTK05_ATKeyDataPack,12);
 					sleepTime1SCounter = 0;
 
-					if(ATKeyControlByte5 != 0) 
-					{
-						GPIO_SetBits(LED_LOGO_GPIOPort,LED_LOGO_GPIOPin);
-					}
-					else
-					{
-						GPIO_ResetBits(LED_LOGO_GPIOPort,LED_LOGO_GPIOPin);
-					}
+//					if(ATKeyControlByte5 != 0) 
+//					{
+//						GPIO_SetBits(LED_LOGO_GPIOPort,LED_LOGO_GPIOPin);
+//					}
+//					else
+//					{
+//						GPIO_ResetBits(LED_LOGO_GPIOPort,LED_LOGO_GPIOPin);
+//					}
 				}
 			}
 			//如果蓝牙处于休眠状态
