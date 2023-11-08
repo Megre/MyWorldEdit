@@ -84,8 +84,36 @@ BOM套个娃，参考原BOM，不同如下：
 
 - 电路板嘉立创制作（5块板130元）
 
-
 电子元件参考电路图（eprj文件）。
+
+
+
+## 组合键
+
+FN+
+
+- F6: USB/Bluetooth mode
+- F7: VolumeDown
+- F8: VolumeUp
+- F9: Mute
+- F10: PlayORPause
+- F11: Stop
+
+Menu+
+
+- ScrollLock: Logo LED switch
+- Delete: Delete Connect Info
+- Insert: Pair Mode
+- Home: Bluetooth Reset
+- End: Bluetooth Sleep
+- F12: LED Flash
+- F11: LED Breath
+- F3: LED Mode3
+- F2: LED Mode2, wasd
+- F1: LED Mode1, all
+- +: LED Brightness+
+- -: LED Brightness-
+- Esc: LED turn off
 
 
 
