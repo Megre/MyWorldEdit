@@ -189,3 +189,29 @@ Menu+
 基于原项目固件，按硬件连接做了对应改动。
 
 在线配置生成QMK固件似乎也是可行方案。不建议新手使用这种方式。新手的主要问题是，各种细节的疏忽会导致DIY失败。围绕原项目或本项目进行微调，成功概率大。网络上公开的项目较多，但资源不完整，难以判断是否可用，难以学习和复现。至少这两个项目是证实可用的。
+
+
+
+# HID Code
+
+| Esc      | F1    | F2   | F3    | F4    | F5   | F6   | F7    | F8   | F9    | F10   | F11    | F12   | PrtSc     | ScrollLock | PauseBreak |
+| -------- | ----- | ---- | ----- | ----- | ---- | ---- | ----- | ---- | ----- | ----- | ------ | ----- | --------- | ---------- | ---------- |
+| 0x29     | 0x3A  | 0x3B | 0x3C  | 0x3D  | 0x3E | 0x3F | 0x40  | 0x41 | 0x42  | 0x43  | 0x44   | 0x45  | 0x46      | 0x47       | 0x48       |
+|          |       |      |       |       |      |      |       |      |       |       |        |       |           |            |            |
+| ~        | !     | @    | #     | $     | %    | ^    | &     | *    | (     | )     | -      | +     | BackSpace | Insert     | Home       |
+| 0x35     | 0x1E  | 0x1F | 0x20  | 0x21  | 0x22 | 0x23 | 0x24  | 0x25 | 0x26  | 0x27  | 0x2D   | 0x2E  | 0x2A      | 0x49       | 0x4A       |
+|          |       |      |       |       |      |      |       |      |       |       |        |       |           |            |            |
+| Tab      | Q     | W    | E     | R     | T    | Y    | U     | I    | O     | P     | {      | }     | \|        | Delete     | End        |
+| 0x2B     | 0x14  | 0x1A | 0x08  | 0x15  | 0x17 | 0x1C | 0x18  | 0x0C | 0x12  | 0x13  | 0x2F   | 0x30  | 0x31      | 0x4C       | 0x4D       |
+|          |       |      |       |       |      |      |       |      |       |       |        |       |           |            |            |
+| CapsLock | A     | S    | D     | F     | G    | H    | J     | K    | L     | ;     | '      | Enter |           |            | PageUp     |
+| 0x39     | 0x04  | 0x16 | 0x07  | 0x09  | 0x0A | 0x0B | 0x0D  | 0x0E | 0x0F  | 0x33  | 0x34   | 0x28  | 0x00      | 0x00       | 0x4B       |
+|          |       |      |       |       |      |      |       |      |       |       |        |       |           |            |            |
+| LShift   | Z     | X    | C     | V     | B    | N    | M     | ,    | .     | /     | RShift | Up    |           |            | PageDown   |
+| xxCK     | 0x1D  | 0x1B | 0x06  | 0x19  | 0x05 | 0x11 | 0x10  | 0x36 | 0x37  | 0x38  | xxCK   | 0x52  | 0x00      | 0x00       | 0x4E       |
+|          |       |      |       |       |      |      |       |      |       |       |        |       |           |            |            |
+| LCtrl    | Win   | LAlt | Space | RAlt  | FN   | Menu | RCtrl | Left | Down  | Right |        |       |           |            |            |
+| xxCK     | xxCK  | xxCK | 0x2C  | xxCK  | xxSK | xxSK | xxCK  | 0x50 | 0x51  | 0x4F  | 0x00   | 0x00  | 0x00      | 0x00       | 0x00       |
+|          |       |      |       |       |      |      |       |      |       |       |        |       |           |            |            |
+| Sleep    | LCtrl | Win  | LAlt  | Space | Menu | FN   | Space | RAlt | RCtrl | Left  | Right  | Down  |           |            |            |
+| 0x82     | xxCK  | xxCK | xxCK  | 0x2C  | xxSK | xxSK | 0x2C  | xxCK | xxCK  | 0x50  | 0x4F   | 0x51  |           |            |            |
