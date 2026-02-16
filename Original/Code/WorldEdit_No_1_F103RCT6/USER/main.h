@@ -31,9 +31,9 @@ extern unsigned char LED_LOGOENBreath_Flag ;
 //void LED_LOGO_FLASH_3TIMES(void);
 void BLUETEETH_Mode(void);
 void USB_Mode(void);
-
-
-
+void Try_Switch_to_USB_Mode(void);
+void Try_Switch_to_BLUETEETH_Mode(void);
+void TIM2_Int_Init(u16 arr,u16 psc);
 
 
 #endif

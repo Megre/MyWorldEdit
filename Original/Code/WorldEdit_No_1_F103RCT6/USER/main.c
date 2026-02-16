@@ -1,74 +1,99 @@
 
-
 #include "main.h"
+#include "deepSleep.h"
 
-void TIM2_Int_Init(u16 arr,u16 psc);
 void TIM3_CH3_PWM_init(u16 arr,u16 psc);
 void myUSB_Init(void);
 void sysInit(void);
+
 static unsigned short sleepTime1SCounter = 0;
+static uint32_t usbConfigStableTime = 0;
 unsigned char sleepTime50MsCounter = 0;
 unsigned char LED_breath_Flag = 0;
 unsigned char LED_LOGOBreath_Flag = 0;
 unsigned char LED_LOGOENBreath_Flag = 0;
-unsigned char system_Status = 1;  //1:ÔËĞĞÖĞ£¬0£ºĞİÃßÖĞ
+unsigned char system_Status = 1;  //1:è¿è¡Œä¸­ï¼Œ0ï¼šä¼‘çœ ä¸­
 unsigned char g_Flag = 0;
 uint8_t ledLogoPWM = 80;
 int8_t ledLogoPWMDelt = 0;
-bool g_USBModeFlag = TRUE;
-
+bool g_USBModeFlag = FALSE;
+bool g_startUSBConfigStableTimer = FALSE;
 
 int main()
 {
-	sysInit();
-	BTK05_Wake();//»½ĞÑBTK05B	
+	sysInit();	
+	BTK05_Wake();
 
 	while(1)
 	{ 
-		if(g_USBModeFlag) //USBÄ£Ê½ÏÂ 
+		if(g_USBModeFlag) //USBæ¨¡å¼ä¸‹ 
 		{
 			if(sleepTime1SCounter <= 1000)
 			{
-				myKeyBoard_ScanKeyAndUpdataATBuffer();//¼üÅÌÊÂ¼ş¸üĞÂ
+				myKeyBoard_ScanKeyAndUpdataATBuffer();//é”®ç›˜äº‹ä»¶æ›´æ–°
 				if(g_myKeyBoard_DataWaitForUploadFlag == 1)
 				{
 					sleepTime1SCounter = 0;
 					g_myKeyBoard_DataWaitForUploadFlag = 0;
-					if(bDeviceState == CONFIGURED)//Èç¹ûÁ¬½ÓÉÏÁË USB
+					if(bDeviceState == CONFIGURED)//å¦‚æœè¿æ¥ä¸Šäº† USB
 						Keyboard_Send(BTK05_ATKeyDataPack+4);
 					//GPIO_SetBits(LED_LOGO_GPIOPort,LED_LOGO_GPIOPin);
-					
 				}
+				
+				Try_Switch_to_BLUETEETH_Mode();
+				continue;
 			}
-			else if(system_Status == 0)
+			
+			if(system_Status == 0)
 			{
-				myKeyBoard_ScanKeyAndUpdataATBuffer();//¼üÅÌÊÂ¼ş¸üĞÂ
+				myKeyBoard_ScanKeyAndUpdataATBuffer();//é”®ç›˜äº‹ä»¶æ›´æ–°
 				if(g_myKeyBoard_DataWaitForUploadFlag == 1)
 				{
 					g_myKeyBoard_DataWaitForUploadFlag = 0;
-					if(bDeviceState == CONFIGURED)//Èç¹ûÁ¬½ÓÉÏÁË USB
+					if(bDeviceState == CONFIGURED)//å¦‚æœè¿æ¥ä¸Šäº† USB
 						Keyboard_Send(BTK05_ATKeyDataPack+4);
 					//GPIO_SetBits(LED_LOGO_GPIOPort,LED_LOGO_GPIOPin);
 					system_Status = 1;
-					TIM_Cmd(TIM2, ENABLE);  //Ê¹ÄÜTIMx	
+					TIM_Cmd(TIM2, ENABLE);  //ä½¿èƒ½TIMx	
 					sleepTime1SCounter = 0;
 					if(LED_Status)	
 						LED_WakeUp();	
 				}
+				continue;
 			}
-			else if(sleepTime1SCounter > 1000)
+			
+			if(sleepTime1SCounter > 1000)
 			{
-				TIM_Cmd(TIM2, DISABLE);  //Ê§ÄÜTIMx		
+				TIM_Cmd(TIM2, DISABLE);  //å¤±èƒ½TIMx		
 				system_Status = 0;
 				LED_GoToSleep();
 			}
 		}
-		else//À¶ÑÀÄ£¿éÄ£Ê½
+		else//è“ç‰™æ¨¡å—æ¨¡å¼
 		{
-			//Èç¹û¼üÅÌĞİÃß¼ÆÊ±Æ÷Ğ¡ÓÚ400²¢ÇÒ¼üÅÌ´¦ÓÚĞÑ×ÅµÄ×´Ì¬
-			if(sleepTime1SCounter <= 400 && BTK05_Status == BTK_WAKE)
+			// ä¸€æ®µæ—¶é—´åæ²¡æœ‰æŒ‰ä¸‹ä»»ä½•æŒ‰é”®ï¼Œåˆ™è¿›å…¥ä¼‘çœ çŠ¶æ€
+			if(sleepTime1SCounter > 70 && BTK05_Status == BTK_WAKE)   
+			{				
+				//è¿›å…¥ä¼‘çœ æ¨¡å¼...
+				BTK05_Sleep();           // ä¼‘çœ BTK05
+				TIM_Cmd(TIM2, DISABLE);  // å¤±èƒ½TIMx		
+				system_Status = 0;
+				LED_ESCOFF();	 
+				
+				// è®© MCU ä¼‘çœ , è¿›å…¥STOPæ¨¡å¼
+				Enter_Deep_Sleep();	  
+    
+				// å”¤é†’åæ‰§è¡Œ
+				BTK05_Wake();
+				TIM_Cmd(TIM2, ENABLE);
+				system_Status = 1;  		// æ¢å¤å·¥ä½œçŠ¶æ€
+				sleepTime1SCounter = 0; // æ¸…é™¤ä¼‘çœ è®¡æ—¶
+			}
+
+			//å¦‚æœé”®ç›˜ä¼‘çœ è®¡æ—¶å™¨å°äº400å¹¶ä¸”é”®ç›˜å¤„äºé†’ç€çš„çŠ¶æ€
+			if(BTK05_Status == BTK_WAKE)
 			{
-				myKeyBoard_ScanKeyAndUpdataATBuffer();//¼üÅÌÊÂ¼ş¸üĞÂ
+				myKeyBoard_ScanKeyAndUpdataATBuffer();//é”®ç›˜äº‹ä»¶æ›´æ–°
 				if(g_myKeyBoard_DataWaitForUploadFlag == 1)
 				{
 					g_myKeyBoard_DataWaitForUploadFlag = 0;
@@ -86,15 +111,15 @@ int main()
 //					}
 				}
 			}
-			//Èç¹ûÀ¶ÑÀ´¦ÓÚĞİÃß×´Ì¬
+			//å¦‚æœè“ç‰™å¤„äºä¼‘çœ çŠ¶æ€
 			else if(BTK05_Status == BTK_SLEEP)
 			{
 				myKeyBoard_ScanKeyAndUpdataATBuffer();
 				if(g_myKeyBoard_DataWaitForUploadFlag == 1)
 				{
 					system_Status = 1;
-					BTK05_Wake();//»½ĞÑBTK05
-					TIM_Cmd(TIM2, ENABLE);  //Ê¹ÄÜTIMx	
+					BTK05_Wake();//å”¤é†’BTK05
+					TIM_Cmd(TIM2, ENABLE);  //ä½¿èƒ½TIMx	
 					sleepTime1SCounter = 0;
 					g_myKeyBoard_DataWaitForUploadFlag = 0;
 					if(LED_Status)	
@@ -102,23 +127,17 @@ int main()
 					BTK05_UART_SendKeyData(BTK05_ATKeyDataPack,12);
 				}
 			}
-			//Èç¹û ¼üÅÌĞİÃß¼ÆÊ±Æ÷´óÓÚ600   ¼´600SÃ»ÓĞ°´ÏÂÈÎºÎ°´¼üÔòÈ»¼üÅÌ½øÈëĞİÃß×´Ì¬
-			else if(sleepTime1SCounter > 400)   
-			{
-				//½øÈëĞİÃßÄ£Ê½...
-				BTK05_Sleep();//ĞİÃßBTK05
-				TIM_Cmd(TIM2, DISABLE);  //Ê§ÄÜTIMx		
-				system_Status = 0;
-				LED_ESCOFF();	 
-			}
+			
+			Try_Switch_to_USB_Mode();
+			
 		}
 		
-		if(LED_BreathEfectFlag && LED_breath_Flag)
-		{
-			LED_BreathProcess();
-			LED_breath_Flag = 0;
-		}
-//		if(LED_LOGOBreath_Flag  && LED_LOGOENBreath_Flag)//logoºôÎüµÆ´¦Àí±êÖ¾
+//		if(LED_BreathEfectFlag && LED_breath_Flag)
+//		{
+//			LED_BreathProcess();
+//			LED_breath_Flag = 0;
+//		}
+//		if(LED_LOGOBreath_Flag  && LED_LOGOENBreath_Flag)//logoå‘¼å¸ç¯å¤„ç†æ ‡å¿—
 //		{
 //			TIM_SetCompare3(TIM3, ledLogoPWM);
 //			if(ledLogoPWMDelt == 0)
@@ -136,33 +155,71 @@ int main()
 //			LED_LOGOBreath_Flag = 0;
 
 //		}
-			
 	}
+}
 
+// megre
+void Try_Switch_to_USB_Mode(void)
+{
+	if(bDeviceState == CONFIGURED) { //å¦‚æœè¿æ¥ä¸Šäº† USB
+		if(!g_startUSBConfigStableTimer) {
+			usbConfigStableTime = 0;
+			g_startUSBConfigStableTimer = TRUE;
+		}
+		else if(usbConfigStableTime >= 500) {					
+			USB_Mode();
+			g_startUSBConfigStableTimer = FALSE;
+		}
+	}
+	else {
+		 g_startUSBConfigStableTimer = FALSE;
+		 usbConfigStableTime = 0;
+	}
+}
+
+void Try_Switch_to_BLUETEETH_Mode(void)
+{
+	if(bDeviceState != CONFIGURED) { //å¦‚æœæ²¡è¿ä¸Š USB
+		if(!g_startUSBConfigStableTimer) {
+			usbConfigStableTime = 0;
+			g_startUSBConfigStableTimer = TRUE;
+		}
+		else if(usbConfigStableTime >= 500) {					
+			BLUETEETH_Mode();
+			g_startUSBConfigStableTimer = FALSE;
+		}
+	}
+	else {
+		 g_startUSBConfigStableTimer = FALSE;
+		 usbConfigStableTime = 0;
+	}
 }
 
 
-////¶¨Ê±Æ÷ÖĞ¶Ï·şÎñ³ÌĞò
-void TIM2_IRQHandler(void)   //TIMÖĞ¶Ï
+//å®šæ—¶å™¨ä¸­æ–­æœåŠ¡ç¨‹åº
+void TIM2_IRQHandler(void)   //TIMä¸­æ–­
 {
-	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)  //¼ì²éTIM¸üĞÂÖĞ¶Ï·¢ÉúÓë·ñ
+	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)  //æ£€æŸ¥TIMæ›´æ–°ä¸­æ–­å‘ç”Ÿä¸å¦
 		{
-			TIM_ClearITPendingBit(TIM2, TIM_IT_Update  );  //Çå³ıTIMx¸üĞÂÖĞ¶Ï±êÖ¾ 
+			TIM_ClearITPendingBit(TIM2, TIM_IT_Update  );  //æ¸…é™¤TIMxæ›´æ–°ä¸­æ–­æ ‡å¿— 
 				
 			sleepTime50MsCounter++;
 			LED_LOGOBreath_Flag = 1;
-			//LED_breath_Timer50ms++;
-			if(sleepTime50MsCounter == 20)	
-			{
-				
-				sleepTime50MsCounter = 0;                   
-				sleepTime1SCounter++;
-				
-			}
+			
 			if(sleepTime50MsCounter % 4 == 0)
-					LED_breath_Flag = 1;
+				LED_breath_Flag = 1;							
+
+			if(g_startUSBConfigStableTimer) {
+				usbConfigStableTime += 50;
+			}
 			
+			if(sleepTime50MsCounter == 20)	
+			{				
+				sleepTime50MsCounter = 0;                   
+				sleepTime1SCounter++;				
+			}
 			
+			//LED_breath_Timer50ms++;	
 		}
 }
 
@@ -176,67 +233,59 @@ void sysInit()
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	DelayInit();
+	DelayInit();	
 	
+	myKeyBoard_GPIO_Init();	
 	
-	myKeyBoard_GPIO_Init();
-	
-	
-	BTK05_Init();
-	
+	BTK05_Init();	
 	
 	LED_LOGO_GPIO_Init();
 	LED_I2C_Configuration();
-	LED_HT16K33_Init();//³õÊ¼»¯Ğ¾Æ¬
-	
-	
+	LED_HT16K33_Init();//åˆå§‹åŒ–èŠ¯ç‰‡
 	
 	//TIM3_CH3_PWM_init(100,0);
-	TIM2_Int_Init(1000,3600);//50msÒ»´ÎÖĞ¶Ï
+	TIM2_Int_Init(1000,3600);//50msä¸€æ¬¡ä¸­æ–­
 	myUSB_Init();
 }
 
-
-
-//Í¨ÓÃ¶¨Ê±Æ÷2ÖĞ¶Ï³õÊ¼»¯
-//ÕâÀïÊ±ÖÓÑ¡ÔñÎªAPB1µÄ2±¶£¬¶øAPB1Îª36M
-//arr£º×Ô¶¯ÖØ×°Öµ¡£
-//psc£ºÊ±ÖÓÔ¤·ÖÆµÊı
-//Ò»´ÎÖĞ¶ÏµÄÊ±¼äÎªt£ºt = (arr * psc / APB1*2) * 1000 ms
+//é€šç”¨å®šæ—¶å™¨2ä¸­æ–­åˆå§‹åŒ–
+//è¿™é‡Œæ—¶é’Ÿé€‰æ‹©ä¸ºAPB1çš„2å€ï¼Œè€ŒAPB1ä¸º36M
+//arrï¼šè‡ªåŠ¨é‡è£…å€¼ã€‚
+//pscï¼šæ—¶é’Ÿé¢„åˆ†é¢‘æ•°
+//ä¸€æ¬¡ä¸­æ–­çš„æ—¶é—´ä¸ºtï¼št = (arr * psc / APB1*2) * 1000 ms
 void TIM2_Int_Init(u16 arr,u16 psc)
 {
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
  
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE); //Ê±ÖÓÊ¹ÄÜ
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE); //æ—¶é’Ÿä½¿èƒ½
 	
-	//¶¨Ê±Æ÷TIM3³õÊ¼»¯
-	TIM_TimeBaseStructure.TIM_Period = arr; //ÉèÖÃÔÚÏÂÒ»¸ö¸üĞÂÊÂ¼ş×°Èë»î¶¯µÄ×Ô¶¯ÖØ×°ÔØ¼Ä´æÆ÷ÖÜÆÚµÄÖµ	
-	TIM_TimeBaseStructure.TIM_Prescaler =psc; //ÉèÖÃÓÃÀ´×÷ÎªTIMxÊ±ÖÓÆµÂÊ³ıÊıµÄÔ¤·ÖÆµÖµ
-	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //ÉèÖÃÊ±ÖÓ·Ö¸î:TDTS = Tck_tim
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //TIMÏòÉÏ¼ÆÊıÄ£Ê½
-	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure); //¸ù¾İÖ¸¶¨µÄ²ÎÊı³õÊ¼»¯TIMxµÄÊ±¼ä»ùÊıµ¥Î»
+	//å®šæ—¶å™¨TIM3åˆå§‹åŒ–
+	TIM_TimeBaseStructure.TIM_Period = arr; //è®¾ç½®åœ¨ä¸‹ä¸€ä¸ªæ›´æ–°äº‹ä»¶è£…å…¥æ´»åŠ¨çš„è‡ªåŠ¨é‡è£…è½½å¯„å­˜å™¨å‘¨æœŸçš„å€¼	
+	TIM_TimeBaseStructure.TIM_Prescaler =psc; //è®¾ç½®ç”¨æ¥ä½œä¸ºTIMxæ—¶é’Ÿé¢‘ç‡é™¤æ•°çš„é¢„åˆ†é¢‘å€¼
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //è®¾ç½®æ—¶é’Ÿåˆ†å‰²:TDTS = Tck_tim
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //TIMå‘ä¸Šè®¡æ•°æ¨¡å¼
+	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure); //æ ¹æ®æŒ‡å®šçš„å‚æ•°åˆå§‹åŒ–TIMxçš„æ—¶é—´åŸºæ•°å•ä½
  
-	TIM_ITConfig(TIM2,TIM_IT_Update,ENABLE ); //Ê¹ÄÜÖ¸¶¨µÄTIMÖĞ¶Ï,ÔÊĞí¸üĞÂÖĞ¶Ï
+	TIM_ITConfig(TIM2,TIM_IT_Update,ENABLE ); //ä½¿èƒ½æŒ‡å®šçš„TIMä¸­æ–­,å…è®¸æ›´æ–°ä¸­æ–­
  
-	//ÖĞ¶ÏÓÅÏÈ¼¶NVICÉèÖÃ
-	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;  //TIMÖĞ¶Ï
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;  //ÏÈÕ¼ÓÅÏÈ¼¶¼¶
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;  //´ÓÓÅÏÈ¼¶¼¶
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //IRQÍ¨µÀ±»Ê¹ÄÜ
-	NVIC_Init(&NVIC_InitStructure);  //³õÊ¼»¯NVIC¼Ä´æÆ÷
+	//ä¸­æ–­ä¼˜å…ˆçº§NVICè®¾ç½®
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;  //TIMä¸­æ–­
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;  //å…ˆå ä¼˜å…ˆçº§çº§
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;  //ä»ä¼˜å…ˆçº§çº§
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //IRQé€šé“è¢«ä½¿èƒ½
+	NVIC_Init(&NVIC_InitStructure);  //åˆå§‹åŒ–NVICå¯„å­˜å™¨
 
-	TIM_Cmd(TIM2, ENABLE);  //Ê¹ÄÜTIMx					 
+	TIM_Cmd(TIM2, ENABLE);  //ä½¿èƒ½TIMx					 
 }
 
 
 void USB_Mode(void)
 {
-
 	g_USBModeFlag = TRUE;	
 	
-	//BTK05½øÈëĞİÃßÄ£Ê½...
-	BTK05_Sleep();//ĞİÃßBTK05
+	//BTK05è¿›å…¥ä¼‘çœ æ¨¡å¼...
+	BTK05_Sleep();//ä¼‘çœ BTK05
 	sleepTime1SCounter = 0;
 	TIM_Cmd(TIM2, ENABLE);  		
 	//system_Status = 1;
@@ -246,11 +295,10 @@ void USB_Mode(void)
 
 void BLUETEETH_Mode(void)
 {
- 
 	g_USBModeFlag = FALSE;	
 	
-	BTK05_Wake();//»½ĞÑBTK05
-	TIM_Cmd(TIM2, ENABLE);  //Ê¹ÄÜTIMx	
+	BTK05_Wake();//å”¤é†’BTK05
+	TIM_Cmd(TIM2, ENABLE);  //ä½¿èƒ½TIMx	
 	sleepTime1SCounter = 0;
 	//GPIO_ResetBits(LED_LOGO_GPIOPort,LED_LOGO_GPIOPin);
 }
@@ -258,8 +306,8 @@ void BLUETEETH_Mode(void)
 
 void myUSB_Init(void)
 {
-	USB_Port_Set(1);	//¿ªÆôUSBÁ¬½Ó
-	//USBÅäÖÃ
+	USB_Port_Set(1);	//å¼€å¯USBè¿æ¥
+	//USBé…ç½®
  	USB_Interrupts_Config();    
  	Set_USBClock();   
  	USB_Init();	 
@@ -268,8 +316,8 @@ void myUSB_Init(void)
 
 void TIM3_CH3_PWM_init(u16 arr,u16 psc)
 {
-    //ÅäÖÃTIM3
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;//×¢Òâ½á¹¹ÌåµÄÉùÃ÷±ØĞëÔÚº¯ÊıµÄ¿ªÍ·
+    //é…ç½®TIM3
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;//æ³¨æ„ç»“æ„ä½“çš„å£°æ˜å¿…é¡»åœ¨å‡½æ•°çš„å¼€å¤´
     TIM_OCInitTypeDef TIM_OCInitStructure;
     GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -280,14 +328,14 @@ void TIM3_CH3_PWM_init(u16 arr,u16 psc)
     TIM_TimeBaseStructure.TIM_Prescaler=psc;
     TIM_TimeBaseInit(TIM3,&TIM_TimeBaseStructure);
 
-    //ÅäÖÃTIM3 Channel3 PWM
+    //é…ç½®TIM3 Channel3 PWM
 
     TIM_OCInitStructure.TIM_OCMode=TIM_OCMode_PWM2;
     TIM_OCInitStructure.TIM_OCPolarity=TIM_OCPolarity_High;
     TIM_OCInitStructure.TIM_OutputState=TIM_OutputState_Enable;
-    TIM_OC3Init(TIM3,&TIM_OCInitStructure);//×¢Òâ´Ë´¦µÄº¯ÊıÃû×ÖÒÔ¼°º¯ÊıµÄÈë¿Ú²ÎÊı
+    TIM_OC3Init(TIM3,&TIM_OCInitStructure);//æ³¨æ„æ­¤å¤„çš„å‡½æ•°åå­—ä»¥åŠå‡½æ•°çš„å…¥å£å‚æ•°
 
-    //ÅäÖÃGPIO¿Ú£¬²¢ÇÒÉèÖÃ³É¸´ÓÃ¹¦ÄÜ
+    //é…ç½®GPIOå£ï¼Œå¹¶ä¸”è®¾ç½®æˆå¤ç”¨åŠŸèƒ½
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
 //    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
@@ -296,10 +344,10 @@ void TIM3_CH3_PWM_init(u16 arr,u16 psc)
     GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
     GPIO_Init(GPIOB,&GPIO_InitStructure);
 	GPIO_ResetBits(GPIOB,GPIO_Pin_0);
-    //°ÑTIM3²¿·ÖÖØÓ³Éäµ½PB5
+    //æŠŠTIM3éƒ¨åˆ†é‡æ˜ å°„åˆ°PB5
     //GPIO_PinRemapConfig(GPIO_PartialRemap_TIM3,ENABLE);
 
-    //Ê¹ÄÜTIM3Ê±ÖÓ
+    //ä½¿èƒ½TIM3æ—¶é’Ÿ
     TIM_Cmd(TIM3,DISABLE);
 }
 

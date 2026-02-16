@@ -5,10 +5,10 @@
 * Author		:firestaradmin
 * Version		:1.0
 * Date			:2019.
-* Description	:À¶ÑÀ¼üÅÌÄ£¿éµÄ¹¦ÄÜ
+* Description	:è“ç‰™é”®ç›˜æ¨¡å—çš„åŠŸèƒ½
 * History		:
 
-2019.12.13		£º²âÊÔATÖ¸Áî·¢ËÍ²¢·µ»ØOK  ÅªÁË°ëÌìµÄ´®¿Ú·¢ËÍ£¬ÒòÎªÀ¶ÑÀÄ£¿éµÄ´®¿Ú½ÓÊÜÒ»¸ö×Ö·ûºóĞèÒªÑÓÊ±Ò»»á£¬²»È»·´Ó¦²»¹ıÀ´¡£
+2019.12.13		ï¼šæµ‹è¯•ATæŒ‡ä»¤å‘é€å¹¶è¿”å›OK  å¼„äº†åŠå¤©çš„ä¸²å£å‘é€ï¼Œå› ä¸ºè“ç‰™æ¨¡å—çš„ä¸²å£æ¥å—ä¸€ä¸ªå­—ç¬¦åéœ€è¦å»¶æ—¶ä¸€ä¼šï¼Œä¸ç„¶ååº”ä¸è¿‡æ¥ã€‚
 *
 *
 *************************************************************************************/
@@ -29,13 +29,13 @@ unsigned char BTK05_ATKeyDataPack[12] = {
 							0x00 ,
 							0x00 		};
 
-unsigned char ATReturnSuccessedFlag = 0;//AT·µ»Ø³É¹¦±êÖ¾Î»
+unsigned char ATReturnSuccessedFlag = 0;//ATè¿”å›æˆåŠŸæ ‡å¿—ä½
 unsigned char RxBuffer[50] ;
 unsigned char RxBuffer_Tail = 0;
-unsigned char RxBuffer_OK[10] ;//½ÓÊÕATÖ¸Áî·µ»ØµÄOK
+unsigned char RxBuffer_OK[10] ;//æ¥æ”¶ATæŒ‡ä»¤è¿”å›çš„OK
 unsigned char RxBuffer_OK_Tail = 0;
 
-unsigned char BTK05_ConsumerPack[8] = 	{	//Consumer¼üÖµÊı¾İ°ü  ÒôÁ¿¼Ó¼õÖ®ÀàµÄ¹¦ÄÜ¼ü
+unsigned char BTK05_ConsumerPack[8] = 	{	//Consumeré”®å€¼æ•°æ®åŒ…  éŸ³é‡åŠ å‡ä¹‹ç±»çš„åŠŸèƒ½é”®
 								0x08,
 								0x00,
 								0xA1,
@@ -57,12 +57,12 @@ void BTK05_Init()
 	BTK05_UART_Init();
 	BTK05_WAKEUP_Init();
 	BTK05_ATMode_Init();
-	BTK05_LowEnerageMode();//½øÈëÊ¡µçÄ£Ê½
+	BTK05_LowEnerageMode();//è¿›å…¥çœç”µæ¨¡å¼
 }
 
 
-//return 1  ATÉèÖÃ³É¹¦
-//return 0  ATÉèÖÃÊ§°Ü
+//return 1  ATè®¾ç½®æˆåŠŸ
+//return 0  ATè®¾ç½®å¤±è´¥
 unsigned char BTK05_UART_SendATCmd(unsigned char* ATBuffer)
 {
 	unsigned char timeOutTemp = 0;
@@ -75,22 +75,22 @@ unsigned char BTK05_UART_SendATCmd(unsigned char* ATBuffer)
 	DelayUs(500);
 	BTK05_UART_SendChar(0x0A);
 	DelayUs(500);
-	while(!ATReturnSuccessedFlag)//µÈ´ı´®¿Ú
+	while(!ATReturnSuccessedFlag)//ç­‰å¾…ä¸²å£
 	{
 		DelayMs(1);
 		timeOutTemp++;
-		if(timeOutTemp == 200)return 0;//ATÉèÖÃÊ§°Ü  TimeOut
+		if(timeOutTemp == 200)return 0;//ATè®¾ç½®å¤±è´¥  TimeOut
 	}
 	
 	if(RxBuffer_OK[0] == 'O' && RxBuffer_OK[1] == 'K')
 	{
 		ATReturnSuccessedFlag = 0;
 		RxBuffer_OK_Tail = 0;
-		return 1;//ATÉèÖÃ³É¹¦
+		return 1;//ATè®¾ç½®æˆåŠŸ
 	}
 	ATReturnSuccessedFlag = 0;
 	RxBuffer_OK_Tail = 0;
-	return 0;//ATÉèÖÃÊ§°Ü
+	return 0;//ATè®¾ç½®å¤±è´¥
 }
 
 void BTK05_UART_SendKeyData(unsigned char* KeyDataBuffer, unsigned char byte_lenth)
@@ -107,9 +107,7 @@ void BTK05_UART_SendChar(unsigned char txChar)
 
 	USART_SendData(BTK05_UART, txChar);	
 	while(USART_GetFlagStatus(BTK05_UART, USART_FLAG_TC) == RESET);
-	USART_ClearFlag(BTK05_UART,USART_FLAG_TC);
-
-	
+	USART_ClearFlag(BTK05_UART,USART_FLAG_TC);	
 }
 
 
@@ -123,7 +121,7 @@ void BTK05_UART_SendString(unsigned char* txBuffer)
 }
 
 
-void BTK05_PairMode()//½øÈëÆ¥ÅäÄ£Ê½
+void BTK05_PairMode()//è¿›å…¥åŒ¹é…æ¨¡å¼
 {
 	if(BTK05_ATMode())
 	{
@@ -133,7 +131,7 @@ void BTK05_PairMode()//½øÈëÆ¥ÅäÄ£Ê½
 	}
 }
 
-void BTK05_LowEnerageMode()//½øÈëÊ¡µçÄ£Ê½
+void BTK05_LowEnerageMode()//è¿›å…¥çœç”µæ¨¡å¼
 {
 	if(BTK05_ATMode())
 	{
@@ -142,7 +140,8 @@ void BTK05_LowEnerageMode()//½øÈëÊ¡µçÄ£Ê½
 		BTK05_KEYMode();
 	}
 }
-void BTK05_RESET()//¸´Î»
+
+void BTK05_RESET()//å¤ä½
 {
 	if(BTK05_ATMode())
 	{
@@ -152,7 +151,7 @@ void BTK05_RESET()//¸´Î»
 	}
 }
 
-void BTK05_DeleteConnectInfo()//É¾³ı ÒÑ¾­Á¬½ÓµÄÖ÷»úĞÅÏ¢
+void BTK05_DeleteConnectInfo()//åˆ é™¤ å·²ç»è¿æ¥çš„ä¸»æœºä¿¡æ¯
 {
 	if(BTK05_ATMode())
 	{
@@ -163,60 +162,43 @@ void BTK05_DeleteConnectInfo()//É¾³ı ÒÑ¾­Á¬½ÓµÄÖ÷»úĞÅÏ¢
 }
 
 
-//»½ĞÑBTK05
+//å”¤é†’BTK05
 void BTK05_Wake()
 {
-	GPIO_SetBits(BTK05_WAKEUP_GPIOPort,BTK05_WAKEUP_GPIOPin);
+	GPIO_SetBits(BTK05_WAKEUP_GPIOPort, BTK05_WAKEUP_GPIOPin);
 	BTK05_Status = BTK_WAKE;
 	DelayMs(20);
-	
 }
-//ĞİÃßBTK05
+
+//ä¼‘çœ BTK05
 void BTK05_Sleep()
 {
-	GPIO_ResetBits(BTK05_WAKEUP_GPIOPort,BTK05_WAKEUP_GPIOPin);
+	GPIO_ResetBits(BTK05_WAKEUP_GPIOPort, BTK05_WAKEUP_GPIOPin);
 	BTK05_Status = BTK_SLEEP;
 	DelayMs(20);
-	
 }
 
-//½øÈëATÖ¸ÁîÄ£Ê½
+//è¿›å…¥ATæŒ‡ä»¤æ¨¡å¼
 unsigned char BTK05_ATMode()
 {
-
-	GPIO_SetBits(BTK05_ATMode_GPIOPort,BTK05_ATMode_GPIOPin);
+	GPIO_SetBits(BTK05_ATMode_GPIOPort, BTK05_ATMode_GPIOPin);
 	DelayMs(400);
-	GPIO_ResetBits(BTK05_ATMode_GPIOPort,BTK05_ATMode_GPIOPin);
+	GPIO_ResetBits(BTK05_ATMode_GPIOPort, BTK05_ATMode_GPIOPin);
 	return BTK05_UART_SendATCmd((unsigned char*)"AT");
 }
 
 
-//ÍË³öATÖ¸ÁîÄ£Ê½
+//é€€å‡ºATæŒ‡ä»¤æ¨¡å¼
 unsigned char BTK05_KEYMode()
 {
 	 return BTK05_UART_SendATCmd((unsigned char*)"AT+EXIT");
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//BTK05_UART´®¿ÚÖĞ¶Ï·şÎñ³ÌĞò
+//BTK05_UARTä¸²å£ä¸­æ–­æœåŠ¡ç¨‹åº
 void USART1_IRQHandler(void)                    
 {
 	unsigned char temp;
-    if(USART_GetITStatus(BTK05_UART, USART_IT_RXNE) != RESET)  //½ÓÊÕÖĞ¶Ï
+    if(USART_GetITStatus(BTK05_UART, USART_IT_RXNE) != RESET)  //æ¥æ”¶ä¸­æ–­
     {
 		temp = USART_ReceiveData(BTK05_UART);
 		RxBuffer_OK[RxBuffer_OK_Tail++] = temp;
@@ -225,19 +207,14 @@ void USART1_IRQHandler(void)
 		{
 			ATReturnSuccessedFlag = 1;
 		}		
-    } 
-
-	
+    } 	
 }
 
 
-
-
-
 //********************************************************************************************************
-//========================================³õÊ¼»¯=======================================================
+//========================================åˆå§‹åŒ–=======================================================
 
-//ĞİÃßÒı½Å³õÊ¼»¯
+//ä¼‘çœ å¼•è„šåˆå§‹åŒ–
 void BTK05_WAKEUP_Init()
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -247,10 +224,10 @@ void BTK05_WAKEUP_Init()
 	GPIO_Init(BTK05_WAKEUP_GPIOPort, &GPIO_InitStructure); 
 	
 	GPIO_SetBits(BTK05_WAKEUP_GPIOPort,BTK05_WAKEUP_GPIOPin);
-	
 }
-//ATÄ£Ê½Òı½Å³õÊ¼»¯
-//Æ½Ê±µÍµçÆ½£¬¸ßµçÆ½Âö³å½øÈëÃüÁîÄ£Ê½£¬¿ÉÒÔÍ¨¹ı AT Ö¸ÁîÅäÖÃ²ÎÊı¡£
+
+//ATæ¨¡å¼å¼•è„šåˆå§‹åŒ–
+//å¹³æ—¶ä½ç”µå¹³ï¼Œé«˜ç”µå¹³è„‰å†²è¿›å…¥å‘½ä»¤æ¨¡å¼ï¼Œå¯ä»¥é€šè¿‡ AT æŒ‡ä»¤é…ç½®å‚æ•°ã€‚
 void BTK05_ATMode_Init()
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -260,14 +237,12 @@ void BTK05_ATMode_Init()
 	GPIO_Init(BTK05_WAKEUP_GPIOPort, &GPIO_InitStructure); 
 	
 	GPIO_ResetBits(BTK05_ATMode_GPIOPort,BTK05_ATMode_GPIOPin);
-	
 }
-
 
 
 void BTK05_UART_Init()
 {
-	//GPIO¶Ë¿ÚÉèÖÃ
+	//GPIOç«¯å£è®¾ç½®
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -275,47 +250,42 @@ void BTK05_UART_Init()
 	RCC_APB2PeriphClockCmd(BTK05_URAT_Clock, ENABLE);
 	USART_DeInit(BTK05_UART);
 
-	//USART1¶Ë¿ÚÅäÖÃ
+	//USART1ç«¯å£é…ç½®
 	//UASART_TX   PA9
 	GPIO_InitStructure.GPIO_Pin = BTK05_URAT_TX_GPIOPin; 
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;    //¸´ÓÃÍÆÍìÊä³ö
-	GPIO_Init(BTK05_URAT_GPIOPort, &GPIO_InitStructure); //³õÊ¼»¯PA9
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;    //å¤ç”¨æ¨æŒ½è¾“å‡º
+	GPIO_Init(BTK05_URAT_GPIOPort, &GPIO_InitStructure); //åˆå§‹åŒ–PA9
 	//USART1_RX      PA10
 	GPIO_InitStructure.GPIO_Pin = BTK05_URAT_RX_GPIOPin;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//¸¡¿ÕÊäÈë
-	GPIO_Init(BTK05_URAT_GPIOPort, &GPIO_InitStructure);  //³õÊ¼»¯PA10
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//æµ®ç©ºè¾“å…¥
+	GPIO_Init(BTK05_URAT_GPIOPort, &GPIO_InitStructure);  //åˆå§‹åŒ–PA10
 
-	//USART1 ³õÊ¼»¯ÉèÖÃ
-	USART_InitStructure.USART_BaudRate = BTK05_URAT_BaudRate;//²¨ÌØÂÊÉèÖÃ
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//×Ö³¤Îª8Î»Êı¾İ¸ñÊ½
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;//Ò»¸öÍ£Ö¹Î»
-	USART_InitStructure.USART_Parity = USART_Parity_No;//ÎŞÆæÅ¼Ğ£ÑéÎ»
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//ÎŞÓ²¼şÊı¾İÁ÷¿ØÖÆ
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;    //ÊÕ·¢Ä£Ê½     
-	USART_Init(BTK05_UART, &USART_InitStructure); //³õÊ¼»¯´®¿Ú1
+	//USART1 åˆå§‹åŒ–è®¾ç½®
+	USART_InitStructure.USART_BaudRate = BTK05_URAT_BaudRate;//æ³¢ç‰¹ç‡è®¾ç½®
+	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//å­—é•¿ä¸º8ä½æ•°æ®æ ¼å¼
+	USART_InitStructure.USART_StopBits = USART_StopBits_1;//ä¸€ä¸ªåœæ­¢ä½
+	USART_InitStructure.USART_Parity = USART_Parity_No;//æ— å¥‡å¶æ ¡éªŒä½
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//æ— ç¡¬ä»¶æ•°æ®æµæ§åˆ¶
+	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;    //æ”¶å‘æ¨¡å¼     
+	USART_Init(BTK05_UART, &USART_InitStructure); //åˆå§‹åŒ–ä¸²å£1
 
-	//Usart1 NVIC ÅäÖÃ
-	NVIC_InitStructure.NVIC_IRQChannel = BTK05_UART_IRQn;//´®¿Ú1ÖĞ¶ÏÍ¨µÀ
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1;//ÇÀÕ¼ÓÅÏÈ¼¶3
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority =1;        //×ÓÓÅÏÈ¼¶3
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;            //IRQÍ¨µÀÊ¹ÄÜ
-	NVIC_Init(&NVIC_InitStructure);    //¸ù¾İÖ¸¶¨µÄ²ÎÊı³õÊ¼»¯VIC¼Ä´æÆ÷
+	//Usart1 NVIC é…ç½®
+	NVIC_InitStructure.NVIC_IRQChannel = BTK05_UART_IRQn;//ä¸²å£1ä¸­æ–­é€šé“
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=1;//æŠ¢å ä¼˜å…ˆçº§3
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority =1;        //å­ä¼˜å…ˆçº§3
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;            //IRQé€šé“ä½¿èƒ½
+	NVIC_Init(&NVIC_InitStructure);    //æ ¹æ®æŒ‡å®šçš„å‚æ•°åˆå§‹åŒ–VICå¯„å­˜å™¨
 
 
 	USART_ClearITPendingBit(BTK05_UART,USART_IT_TC);
-	USART_ClearITPendingBit(BTK05_UART,USART_IT_TXE);//Çå³ı·¢ËÍÖĞ¶Ï±êÖ¾Î»
-	USART_ITConfig(BTK05_UART, USART_IT_RXNE, ENABLE);//¿ªÆôÏà¹ØÖĞ¶Ï
+	USART_ClearITPendingBit(BTK05_UART,USART_IT_TXE);//æ¸…é™¤å‘é€ä¸­æ–­æ ‡å¿—ä½
+	USART_ITConfig(BTK05_UART, USART_IT_RXNE, ENABLE);//å¼€å¯ç›¸å…³ä¸­æ–­
 	//USART_ITConfig(BTK05_UART, USART_IT_TXE, ENABLE);
 	USART_ClearFlag(BTK05_UART,USART_FLAG_TC);
 	
-	USART_Cmd(BTK05_UART, ENABLE);  //Ê¹ÄÜBTK05_UART´®¿Ú
+	USART_Cmd(BTK05_UART, ENABLE);  //ä½¿èƒ½BTK05_UARTä¸²å£
 }
 
-
 //********************************************************************************************************
-
-
-
-
 

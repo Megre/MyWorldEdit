@@ -1,6 +1,17 @@
 
 #include "stm32f10x_it.h"
 
+// megre
+void EXTI9_5_IRQHandler(void)
+{
+    if (EXTI_GetITStatus(EXTI_Line5) != RESET)
+    {
+        // 仅清除中断标志，不做其他操作（唤醒即可）
+        EXTI_ClearITPendingBit(EXTI_Line5);
+        // 注意：STOP 模式下，此 ISR 可能不会执行完整，但 WFI 已退出
+    }
+}
+
 void NMI_Handler(void)
 {
 }

@@ -2,6 +2,49 @@
 #define __MYKEYBOARD_H_
 //#include "main.h"
 
+#define myKeyBoard_row_GPIOPort		GPIOA
+#define myKeyBoard_row0_GPIOPin		GPIO_Pin_0
+#define myKeyBoard_row1_GPIOPin		GPIO_Pin_1
+#define myKeyBoard_row2_GPIOPin		GPIO_Pin_2
+#define myKeyBoard_row3_GPIOPin		GPIO_Pin_3
+#define myKeyBoard_row4_GPIOPin		GPIO_Pin_4
+#define myKeyBoard_row5_GPIOPin		GPIO_Pin_5
+
+#define myKeyBoard_col3_0_GPIOPort	GPIOB
+#define myKeyBoard_col0_GPIOPort	GPIOB
+#define myKeyBoard_col1_GPIOPort	GPIOB
+#define myKeyBoard_col2_GPIOPort	GPIOB
+#define myKeyBoard_col3_GPIOPort	GPIOB
+#define myKeyBoard_col15_4_GPIOPort	GPIOC
+#define myKeyBoard_col4_GPIOPort	GPIOC
+#define myKeyBoard_col5_GPIOPort	GPIOC
+#define myKeyBoard_col6_GPIOPort	GPIOC
+#define myKeyBoard_col7_GPIOPort	GPIOC
+#define myKeyBoard_col8_GPIOPort	GPIOC
+#define myKeyBoard_col9_GPIOPort	GPIOC
+#define myKeyBoard_col10_GPIOPort	GPIOC
+#define myKeyBoard_col11_GPIOPort	GPIOC
+#define myKeyBoard_col12_GPIOPort	GPIOC
+#define myKeyBoard_col13_GPIOPort	GPIOC
+#define myKeyBoard_col14_GPIOPort	GPIOC
+#define myKeyBoard_col15_GPIOPort	GPIOC
+
+#define myKeyBoard_col0_GPIOPin		GPIO_Pin_12
+#define myKeyBoard_col1_GPIOPin		GPIO_Pin_13
+#define myKeyBoard_col2_GPIOPin		GPIO_Pin_14
+#define myKeyBoard_col3_GPIOPin		GPIO_Pin_15
+#define myKeyBoard_col4_GPIOPin		GPIO_Pin_6
+#define myKeyBoard_col5_GPIOPin		GPIO_Pin_7
+#define myKeyBoard_col6_GPIOPin		GPIO_Pin_8
+#define myKeyBoard_col7_GPIOPin		GPIO_Pin_9
+#define myKeyBoard_col8_GPIOPin		GPIO_Pin_4
+#define myKeyBoard_col9_GPIOPin		GPIO_Pin_5
+#define myKeyBoard_col10_GPIOPin	GPIO_Pin_10
+#define myKeyBoard_col11_GPIOPin	GPIO_Pin_0
+#define myKeyBoard_col12_GPIOPin	GPIO_Pin_1
+#define myKeyBoard_col13_GPIOPin	GPIO_Pin_2
+#define myKeyBoard_col14_GPIOPin	GPIO_Pin_3
+#define myKeyBoard_col15_GPIOPin	GPIO_Pin_11
 
 
 typedef enum 
@@ -11,18 +54,19 @@ typedef enum
 }KeyState_enumTypedef;
 
 //extern KeyState_enumTypedef myKeyBoard_KeyState[6][16];
-extern unsigned char g_myKeyBoard_DataWaitForUploadFlag;//Êı¾İµÈ´ıÉÏ´«±êÖ¾
-extern unsigned char ATKeyControlByte5 ;//×´Ì¬¿ØÖÆ¼ü×Ö½Ú ÈçShift Ctrl¼üµÈ
+extern unsigned char g_myKeyBoard_DataWaitForUploadFlag;//æ•°æ®ç­‰å¾…ä¸Šä¼ æ ‡å¿—
+extern unsigned char ATKeyControlByte5 ;//çŠ¶æ€æ§åˆ¶é”®å­—èŠ‚ å¦‚Shift Ctrlé”®ç­‰
 
 
-void myKeyBoard_GPIO_Init(void);//°´¼üIO³õÊ¼»¯
-void myKeyBoard_KeyScan(void);//ÎïÀí²ã¼üÅÌ×´Ì¬É¨Ãè£¬°´¼üÊÇ·ñ±»°´ÏÂ 
+void myKeyBoard_GPIO_Init(void);//æŒ‰é”®IOåˆå§‹åŒ–
+void myKeyBoard_KeyScan(void);//ç‰©ç†å±‚é”®ç›˜çŠ¶æ€æ‰«æï¼ŒæŒ‰é”®æ˜¯å¦è¢«æŒ‰ä¸‹ 
 
-void myKeyBoard_JudgeKeyStateChange(void);//ÅĞ¶Ï¼üÅÌ×´Ì¬ÊÇ·ñÓĞ±ä»¯£¬ÓĞÔòÖÃÎ»myKeyBoard_KeyStateChangedFlag±êÖ¾
-void myKeyBoard_UpdataATDataPack(void);//¼üÅÌATÊı¾İ°ü¸üĞÂ
-void myKeyBoard_ScanKeyAndUpdataATBuffer(void);//¼üÅÌÉ¨Ãè²¢¸üĞÂKeyÊı¾İ°ü
+void myKeyBoard_JudgeKeyStateChange(void);//åˆ¤æ–­é”®ç›˜çŠ¶æ€æ˜¯å¦æœ‰å˜åŒ–ï¼Œæœ‰åˆ™ç½®ä½myKeyBoard_KeyStateChangedFlagæ ‡å¿—
+void myKeyBoard_UpdataATDataPack(void);//é”®ç›˜ATæ•°æ®åŒ…æ›´æ–°
+void myKeyBoard_ScanKeyAndUpdataATBuffer(void);//é”®ç›˜æ‰«æå¹¶æ›´æ–°Keyæ•°æ®åŒ…
 unsigned char myKeyBoard_JudgeKeyPressWithName(const char* keyName);
-void myKeyBoard_Process_All(void);//¼üÅÌÖĞĞÄ³ÌĞò
+void myKeyBoard_Process_All(void);//é”®ç›˜ä¸­å¿ƒç¨‹åº
+void clear_keyboard_state(void);
 #endif
 
 

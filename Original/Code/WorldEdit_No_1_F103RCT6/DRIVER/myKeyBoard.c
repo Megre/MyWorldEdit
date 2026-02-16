@@ -2,50 +2,6 @@
 #include "myKeyBoard.h"
 #include <string.h>
 
-#define myKeyBoard_row_GPIOPort		GPIOA
-#define myKeyBoard_row0_GPIOPin		GPIO_Pin_0
-#define myKeyBoard_row1_GPIOPin		GPIO_Pin_1
-#define myKeyBoard_row2_GPIOPin		GPIO_Pin_2
-#define myKeyBoard_row3_GPIOPin		GPIO_Pin_3
-#define myKeyBoard_row4_GPIOPin		GPIO_Pin_4
-#define myKeyBoard_row5_GPIOPin		GPIO_Pin_5
-
-#define myKeyBoard_col3_0_GPIOPort	GPIOB
-#define myKeyBoard_col0_GPIOPort	GPIOB
-#define myKeyBoard_col1_GPIOPort	GPIOB
-#define myKeyBoard_col2_GPIOPort	GPIOB
-#define myKeyBoard_col3_GPIOPort	GPIOB
-#define myKeyBoard_col15_4_GPIOPort	GPIOC
-#define myKeyBoard_col4_GPIOPort	GPIOC
-#define myKeyBoard_col5_GPIOPort	GPIOC
-#define myKeyBoard_col6_GPIOPort	GPIOC
-#define myKeyBoard_col7_GPIOPort	GPIOC
-#define myKeyBoard_col8_GPIOPort	GPIOC
-#define myKeyBoard_col9_GPIOPort	GPIOC
-#define myKeyBoard_col10_GPIOPort	GPIOC
-#define myKeyBoard_col11_GPIOPort	GPIOC
-#define myKeyBoard_col12_GPIOPort	GPIOC
-#define myKeyBoard_col13_GPIOPort	GPIOC
-#define myKeyBoard_col14_GPIOPort	GPIOC
-#define myKeyBoard_col15_GPIOPort	GPIOC
-
-#define myKeyBoard_col0_GPIOPin		GPIO_Pin_12
-#define myKeyBoard_col1_GPIOPin		GPIO_Pin_13
-#define myKeyBoard_col2_GPIOPin		GPIO_Pin_14
-#define myKeyBoard_col3_GPIOPin		GPIO_Pin_15
-#define myKeyBoard_col4_GPIOPin		GPIO_Pin_6
-#define myKeyBoard_col5_GPIOPin		GPIO_Pin_7
-#define myKeyBoard_col6_GPIOPin		GPIO_Pin_8
-#define myKeyBoard_col7_GPIOPin		GPIO_Pin_9
-#define myKeyBoard_col8_GPIOPin		GPIO_Pin_4
-#define myKeyBoard_col9_GPIOPin		GPIO_Pin_5
-#define myKeyBoard_col10_GPIOPin	GPIO_Pin_10
-#define myKeyBoard_col11_GPIOPin	GPIO_Pin_0
-#define myKeyBoard_col12_GPIOPin	GPIO_Pin_1
-#define myKeyBoard_col13_GPIOPin	GPIO_Pin_2
-#define myKeyBoard_col14_GPIOPin	GPIO_Pin_3
-#define myKeyBoard_col15_GPIOPin	GPIO_Pin_11
-
 #define myKeyBoard_ControlKey 0x00
 #define myKeyBoard_SpecialKey 0x00
 
@@ -115,40 +71,46 @@ typedef struct
 	unsigned char colN;
 }ATKeyDataStructureTypedef;
 
-//ÆÕÍ¨°´¼üÔİ´æÊı×é
+//æ™®é€šæŒ‰é”®æš‚å­˜æ•°ç»„
 ATKeyDataStructureTypedef ATKeyData[6];
-unsigned char ATKeyControlByte5 = 0x00;//×´Ì¬¿ØÖÆ¼ü×Ö½Ú ÈçShift Ctrl¼üµÈ
-//6ĞĞx16ÁĞ¼üÅÌ ×´Ì¬Êı×é
-KeyState_enumTypedef myKeyBoard_KeyState[6][16] = {KEYUNPRESSED};//µ±Ç°°´¼ü×´Ì¬
-KeyState_enumTypedef myKeyBoard_KeyState_Ex[6][16] = {KEYUNPRESSED};//ÉÏ´Î°´¼ü×´Ì¬
+unsigned char ATKeyControlByte5 = 0x00;//çŠ¶æ€æ§åˆ¶é”®å­—èŠ‚ å¦‚Shift Ctrlé”®ç­‰
+//6è¡Œx16åˆ—é”®ç›˜ çŠ¶æ€æ•°ç»„
+KeyState_enumTypedef myKeyBoard_KeyState[6][16] = {KEYUNPRESSED};//å½“å‰æŒ‰é”®çŠ¶æ€
+KeyState_enumTypedef myKeyBoard_KeyState_Ex[6][16] = {KEYUNPRESSED};//ä¸Šæ¬¡æŒ‰é”®çŠ¶æ€
 
 u8 LOGO_LED_Status = 0;
 
-unsigned char myKeyBoard_KeyStateChangedFlag = 0;//¼üÅÌ×´Ì¬¸Ä±ä±êÖ¾
-unsigned char myKeyBoard_KeyIsControl = 1;//¼üÅÌ¿ØÖÆ°´¼ü±êÖ¾
-unsigned char g_myKeyBoard_DataWaitForUploadFlag = 0;//Êı¾İµÈ´ıÉÏ´«±êÖ¾
-
+unsigned char myKeyBoard_KeyStateChangedFlag = 0;//é”®ç›˜çŠ¶æ€æ”¹å˜æ ‡å¿—
+unsigned char myKeyBoard_KeyIsControl = 1;//é”®ç›˜æ§åˆ¶æŒ‰é”®æ ‡å¿—
+unsigned char g_myKeyBoard_DataWaitForUploadFlag = 0;//æ•°æ®ç­‰å¾…ä¸Šä¼ æ ‡å¿—
 
 void myKeyBoard_ControlKeyProcess(u8 rowi, u8 colj);
-void myKeyBoard_KeyScan_rowScan(GPIO_TypeDef * 		col_GPIOPort, 
-								uint8_t 			col_GPIOPin_Index,
-								const uint16_t *	p_col_GPIOPin);
+void myKeyBoard_KeyScan_rowScan(GPIO_TypeDef *col_GPIOPort, 
+								uint8_t col_GPIOPin_Index, const uint16_t *p_col_GPIOPin);
 
+// megre
+void clear_keyboard_state(void)
+{
+		g_myKeyBoard_DataWaitForUploadFlag = 0;
+		for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 16; j++) {
+            myKeyBoard_KeyState[i][j] = KEYUNPRESSED;
+            myKeyBoard_KeyState_Ex[i][j] = KEYUNPRESSED;
+        }
+    }
+}
 
-
-
-
-//¼üÅÌ¸üĞÂ
+//é”®ç›˜æ›´æ–°
 void myKeyBoard_ScanKeyAndUpdataATBuffer()
 {
-	myKeyBoard_KeyScan();//ÎïÀí²ã¼üÅÌ×´Ì¬É¨Ãè£¬°´¼üÊÇ·ñ±»°´ÏÂ £¬ 
-	myKeyBoard_JudgeKeyStateChange();//ÅĞ¶Ï¼üÅÌ×´Ì¬ÊÇ·ñÓĞ±ä»¯£¬ÓĞÔòÖÃÎ»myKeyBoard_KeyStateChangedFlag±êÖ¾
+	myKeyBoard_KeyScan();//ç‰©ç†å±‚é”®ç›˜çŠ¶æ€æ‰«æï¼ŒæŒ‰é”®æ˜¯å¦è¢«æŒ‰ä¸‹ ï¼Œ 
+	myKeyBoard_JudgeKeyStateChange();//åˆ¤æ–­é”®ç›˜çŠ¶æ€æ˜¯å¦æœ‰å˜åŒ–ï¼Œæœ‰åˆ™ç½®ä½myKeyBoard_KeyStateChangedFlagæ ‡å¿—
 	
-	if(myKeyBoard_KeyStateChangedFlag)//ÅĞ¶ÏÊÇ·ñÓĞ±ä»¯
+	if(myKeyBoard_KeyStateChangedFlag)//åˆ¤æ–­æ˜¯å¦æœ‰å˜åŒ–
 	{
 		myKeyBoard_KeyStateChangedFlag = 0;
-		myKeyBoard_UpdataATDataPack();//¼üÅÌATÊı¾İ°ü¸üĞÂ
-		g_myKeyBoard_DataWaitForUploadFlag = 1;//ÖÃÎ»Êı¾İµÈ´ıÉÏ´«±êÖ¾
+		myKeyBoard_UpdataATDataPack();//é”®ç›˜ATæ•°æ®åŒ…æ›´æ–°
+		g_myKeyBoard_DataWaitForUploadFlag = 1;//ç½®ä½æ•°æ®ç­‰å¾…ä¸Šä¼ æ ‡å¿—
 	}
 }
 
@@ -156,7 +118,7 @@ void myKeyBoard_ScanKeyAndUpdataATBuffer()
 */
 
 
-//¶¨Òå FN×éºÏ¼üµÄÃ¶¾Ù£¬·½±ãÏÂÃæ¼üÖµ´¦Àí
+//å®šä¹‰ FNç»„åˆé”®çš„æšä¸¾ï¼Œæ–¹ä¾¿ä¸‹é¢é”®å€¼å¤„ç†
 enum{
 	none = 0,
 	Mute = 1,
@@ -166,9 +128,9 @@ enum{
 	Stop = 5
 }	specialKeyenum = none;
 
-void ConsumerKeyProcess(void)//´¦ÀíFN×éºÏ¹¦ÄÜ¼ü£¬²¢·¢ËÍ¸øBTK05
+void ConsumerKeyProcess(void)//å¤„ç†FNç»„åˆåŠŸèƒ½é”®ï¼Œå¹¶å‘é€ç»™BTK05
 {
-	BTK05_ConsumerPack[5] = 0x00;//ÇåÁã
+	BTK05_ConsumerPack[5] = 0x00;//æ¸…é›¶
 	switch(specialKeyenum)
 	{
 		case Mute:
@@ -192,7 +154,7 @@ void ConsumerKeyProcess(void)//´¦ÀíFN×éºÏ¹¦ÄÜ¼ü£¬²¢·¢ËÍ¸øBTK05
 	}
 	
 	BTK05_UART_SendKeyData(BTK05_ConsumerPack,8);
-	BTK05_ConsumerPack[5] = 0x00;//ÇåÁã
+	BTK05_ConsumerPack[5] = 0x00;//æ¸…é›¶
 	BTK05_UART_SendKeyData(BTK05_ConsumerPack,8);
 }
 
@@ -200,9 +162,9 @@ void myKeyBoard_UpdataATDataPack()
 {
 	u8 i,j,k;
 	u8 AlreadeyExistflag = 0;
-	ATKeyControlByte5 = 0x00;//Çå³ş¿ØÖÆ°´¼ü¼üÖµ
+	ATKeyControlByte5 = 0x00;//æ¸…æ¥šæ§åˆ¶æŒ‰é”®é”®å€¼
 	//u8 specialKeyenum = 0;
-	if(FN_STATE == KEYPRESSED)//ÅĞ¶ÏFN¼üÊÇ·ñ±»°´ÏÂ
+	if(FN_STATE == KEYPRESSED)//åˆ¤æ–­FNé”®æ˜¯å¦è¢«æŒ‰ä¸‹
 	{
 		if(myKeyBoard_JudgeKeyPressWithName("F8"))
 		{
@@ -227,23 +189,26 @@ void myKeyBoard_UpdataATDataPack()
 		}
 		if(specialKeyenum != none)
 		{
-			ConsumerKeyProcess();//´¦ÀíFN×éºÏ¹¦ÄÜ¼ü£¬²¢·¢ËÍ¸øBTK05
+			ConsumerKeyProcess();//å¤„ç†FNç»„åˆåŠŸèƒ½é”®ï¼Œå¹¶å‘é€ç»™BTK05
 			specialKeyenum = none;//
 			//return;
 		}			
 	} // FN END
 	
-	if(MENU_STATE == KEYPRESSED)//ÅĞ¶ÏMenu¼üÊÇ·ñ±»°´ÏÂ
+	if(MENU_STATE == KEYPRESSED)//åˆ¤æ–­Menué”®æ˜¯å¦è¢«æŒ‰ä¸‹
 	{
 		if(myKeyBoard_JudgeKeyPressWithName("F6"))
 		{
 			if(!g_USBModeFlag)
 			{
-				USB_Mode();
-				LOGO_LED_Status = 0;
+				if(bDeviceState == CONFIGURED) { //megre
+					USB_Mode();	
+					LOGO_LED_Status = 0;
+				}
 			}
-			else 
+			else {
 				BLUETEETH_Mode();
+			}
 			
 //			LED_LOGO_FLASH_3TIMES();
 		}
@@ -280,16 +245,16 @@ void myKeyBoard_UpdataATDataPack()
 		}
 		else if(myKeyBoard_JudgeKeyPressWithName("F12"))
 		{
-			LED_SetFlash();//ÉÁË¸¿ª¹Ø
+			LED_SetFlash();//é—ªçƒå¼€å…³
 		}
 		else if(myKeyBoard_JudgeKeyPressWithName("F11"))
 		{
-			LED_SetBreathEfect();//ºôÎüµÆ¿ª¹Ø	
+			LED_SetBreathEfect();//å‘¼å¸ç¯å¼€å…³	
 		}
 		else if(myKeyBoard_JudgeKeyPressWithName("F4"))
 		{
-			//°´Ë­ÁÁË­Ä£Ê½
-			//²¨ÀËÄ£Ê½
+			//æŒ‰è°äº®è°æ¨¡å¼
+			//æ³¢æµªæ¨¡å¼
 		
 		}
 		else if(myKeyBoard_JudgeKeyPressWithName("F3"))
@@ -298,11 +263,11 @@ void myKeyBoard_UpdataATDataPack()
 		}
 		else if(myKeyBoard_JudgeKeyPressWithName("F2"))
 		{
-			LED_Mode2();//ÁÁWASD ÉÏÏÂ×óÓÒ
+			LED_Mode2();//äº®WASD ä¸Šä¸‹å·¦å³
 		}
 		else if(myKeyBoard_JudgeKeyPressWithName("F1"))
 		{
-			LED_Mode1();//È«ÁÁ
+			LED_Mode1();//å…¨äº®
 		}
 
 		else if(myKeyBoard_JudgeKeyPressWithName("+"))
@@ -339,7 +304,7 @@ void myKeyBoard_UpdataATDataPack()
 //		}
 	} // MENU END
 		
-	for(i = 0; i < 6 ; i++)//ÅĞ¶ÏÉÏ´Î°´ÏÂµÄ°´¼üÏÖÔÚÊÇ·ñ»¹±»°´ÏÂ,Èô·ñÔò½«ATKeyDataµÄÊı¾İÇåÁã
+	for(i = 0; i < 6 ; i++)//åˆ¤æ–­ä¸Šæ¬¡æŒ‰ä¸‹çš„æŒ‰é”®ç°åœ¨æ˜¯å¦è¿˜è¢«æŒ‰ä¸‹,è‹¥å¦åˆ™å°†ATKeyDataçš„æ•°æ®æ¸…é›¶
 	{
 		if(ATKeyData[i].ATKeyData != 0x00)
 		{
@@ -354,12 +319,12 @@ void myKeyBoard_UpdataATDataPack()
 	{
 		for(j = 0; j < 16; j++)
 		{
-			if(myKeyBoard_KeyState[i][j] == KEYPRESSED)//Èç¹û°´¼ü±»°´ÏÂÔò´¦Àí¼üÅÌÊı¾İ°ü
+			if(myKeyBoard_KeyState[i][j] == KEYPRESSED)//å¦‚æœæŒ‰é”®è¢«æŒ‰ä¸‹åˆ™å¤„ç†é”®ç›˜æ•°æ®åŒ…
 			{
-				myKeyBoard_ControlKeyProcess(i,j);//¿ØÖÆ°´¼ü´¦Àí
+				myKeyBoard_ControlKeyProcess(i,j);//æ§åˆ¶æŒ‰é”®å¤„ç†
 				if(myKeyBoard_KeyIsControl == 0)
 				{
-					for(k = 0; k < 6; k++)//ÅĞ¶ÏATKeyDataÊı¾İ°üÀïÊÇ·ñÒÑ¾­ÓĞ¸Ã¼üµÄÖµÁË£¬¼´ÊÇ·ñÖ®Ç°ÒÑ¾­±»°´ÏÂÁË
+					for(k = 0; k < 6; k++)//åˆ¤æ–­ATKeyDataæ•°æ®åŒ…é‡Œæ˜¯å¦å·²ç»æœ‰è¯¥é”®çš„å€¼äº†ï¼Œå³æ˜¯å¦ä¹‹å‰å·²ç»è¢«æŒ‰ä¸‹äº†
 					{
 						if(ATKeyData[k].ATKeyData == myKeyBoard_KeyMap_ATValue[i][j])
 						{
@@ -367,13 +332,13 @@ void myKeyBoard_UpdataATDataPack()
 							break;
 						}
 					}
-					if(AlreadeyExistflag == 0)//Èç¹ûATKeyDataÊı¾İ°üÃ»ÓĞ¸Ã¼üÖµÔò·ÅÈë
+					if(AlreadeyExistflag == 0)//å¦‚æœATKeyDataæ•°æ®åŒ…æ²¡æœ‰è¯¥é”®å€¼åˆ™æ”¾å…¥
 					{
-						//Ñ­»·	Ö»ÒªATKeyDataÊı¾İ°üÓĞ¿ÕÎ»Ôò²åÈë¸Ã¼üÖµ£¬²¢ÇÒbreak¡£
-						//Èç¹ûÁù´ÎÑ­»·Íê±ÏÒ²Ã»²å¾ÍÎŞĞ§£¬ÒòÎªÒ»´ÎÖ»ÄÜ°´ÏÂÁù¸ö°´¼ü
+						//å¾ªç¯	åªè¦ATKeyDataæ•°æ®åŒ…æœ‰ç©ºä½åˆ™æ’å…¥è¯¥é”®å€¼ï¼Œå¹¶ä¸”breakã€‚
+						//å¦‚æœå…­æ¬¡å¾ªç¯å®Œæ¯•ä¹Ÿæ²¡æ’å°±æ— æ•ˆï¼Œå› ä¸ºä¸€æ¬¡åªèƒ½æŒ‰ä¸‹å…­ä¸ªæŒ‰é”®
 						for(k = 0; k < 6; k++)
 						{
-							if(ATKeyData[k].ATKeyData == 0x00)//½«°´¼üATÖµ·ÅÈëATKeyData  Buffer
+							if(ATKeyData[k].ATKeyData == 0x00)//å°†æŒ‰é”®ATå€¼æ”¾å…¥ATKeyData  Buffer
 							{
 								ATKeyData[k].ATKeyData = myKeyBoard_KeyMap_ATValue[i][j];
 								ATKeyData[k].rowN = i;
@@ -393,13 +358,13 @@ void myKeyBoard_UpdataATDataPack()
 		}
 	}
 	
-	//°´¼ü¼üÖµÅĞ¶ÏÍê±Ïºó£¬½«¼üÅÌÊı¾İ°ü¸üĞÂ
-	BTK05_ATKeyDataPack[4] = ATKeyControlByte5;	//¸üĞÂ¿ØÖÆ°´¼ü×Ö½Ú
+	//æŒ‰é”®é”®å€¼åˆ¤æ–­å®Œæ¯•åï¼Œå°†é”®ç›˜æ•°æ®åŒ…æ›´æ–°
+	BTK05_ATKeyDataPack[4] = ATKeyControlByte5;	//æ›´æ–°æ§åˆ¶æŒ‰é”®å­—èŠ‚
 	
-//=========================================================Ë¼Â·ÕıÈ·µÄ´úÂë£¬µ«²»ÊÇÕâÑùÊµÏÖµÄ£¬½ö×÷¼ÍÄî
-//	//´¦ÀíFN×éºÏ¼üµÄ¼üÖµ¸üĞÂ
+//=========================================================æ€è·¯æ­£ç¡®çš„ä»£ç ï¼Œä½†ä¸æ˜¯è¿™æ ·å®ç°çš„ï¼Œä»…ä½œçºªå¿µ
+//	//å¤„ç†FNç»„åˆé”®çš„é”®å€¼æ›´æ–°
 //	u8 specialATKeyValueTemp = 0;
-//	if(specialKeyenum != none)//Èç¹ûFN×éºÏ¼ü±»°´ÏÂÁË
+//	if(specialKeyenum != none)//å¦‚æœFNç»„åˆé”®è¢«æŒ‰ä¸‹äº†
 //	{
 //		switch(specialKeyenum)
 //		{
@@ -416,24 +381,24 @@ void myKeyBoard_UpdataATDataPack()
 //			default:
 //				break;
 //		}
-//		//Ñ­»·	Ö»ÒªATKeyDataÊı¾İ°üÓĞ¿ÕÎ»Ôò²åÈë¸Ã¼üÖµ£¬²¢ÇÒbreak¡£
-//		//Èç¹ûÁù´ÎÑ­»·Íê±ÏÒ²Ã»²å¾ÍÎŞĞ§£¬ÒòÎªÒ»´ÎÖ»ÄÜ°´ÏÂÁù¸ö°´¼ü
+//		//å¾ªç¯	åªè¦ATKeyDataæ•°æ®åŒ…æœ‰ç©ºä½åˆ™æ’å…¥è¯¥é”®å€¼ï¼Œå¹¶ä¸”breakã€‚
+//		//å¦‚æœå…­æ¬¡å¾ªç¯å®Œæ¯•ä¹Ÿæ²¡æ’å°±æ— æ•ˆï¼Œå› ä¸ºä¸€æ¬¡åªèƒ½æŒ‰ä¸‹å…­ä¸ªæŒ‰é”®
 //		for(k = 0; k < 6; k++)
 //		{
-//			if(ATKeyData[k].ATKeyData == 0x00)//½«°´¼üATÖµ·ÅÈëATKeyData  Buffer
+//			if(ATKeyData[k].ATKeyData == 0x00)//å°†æŒ‰é”®ATå€¼æ”¾å…¥ATKeyData  Buffer
 //			{
 //				ATKeyData[k].ATKeyData = specialATKeyValueTemp;
-//				ATKeyData[k].rowN = 5;	//¼üÅÌÖĞµÄµÚÁùĞĞ16ÁĞÓÀÔ¶²»¿ÉÄÜ±»°´ÏÂ£¬ËùÒÔFN×éºÏ¼üµÄAT¼üÖµÔÚÏÂÒ»´ÎÉ¨ÃèÊ±£¬¾Í»á±»ÇåÁã
-//				ATKeyData[k].colN = 15;	//ÕâÊÇÓÅ»¯µÄ¼üÖµÈ¡Ïû·½Ê½£¬·ñÔòÔÚ·¢ËÍÍæATÖµºó£¬ĞèÒªÇå¿ÕATÖµÊı×éÖĞµÄFN×éºÏ¼üµÄATÖµ
+//				ATKeyData[k].rowN = 5;	//é”®ç›˜ä¸­çš„ç¬¬å…­è¡Œ16åˆ—æ°¸è¿œä¸å¯èƒ½è¢«æŒ‰ä¸‹ï¼Œæ‰€ä»¥FNç»„åˆé”®çš„ATé”®å€¼åœ¨ä¸‹ä¸€æ¬¡æ‰«ææ—¶ï¼Œå°±ä¼šè¢«æ¸…é›¶
+//				ATKeyData[k].colN = 15;	//è¿™æ˜¯ä¼˜åŒ–çš„é”®å€¼å–æ¶ˆæ–¹å¼ï¼Œå¦åˆ™åœ¨å‘é€ç©ATå€¼åï¼Œéœ€è¦æ¸…ç©ºATå€¼æ•°ç»„ä¸­çš„FNç»„åˆé”®çš„ATå€¼
 //				break;
 //			}
 //		}
 //		specialKeyenum = none;
 //	}
-//=========================================================Ë¼Â·ÕıÈ·µÄ´úÂë£¬µ«²»ÊÇÕâÑùÊµÏÖµÄ£¬½ö×÷¼ÍÄî
+//=========================================================æ€è·¯æ­£ç¡®çš„ä»£ç ï¼Œä½†ä¸æ˜¯è¿™æ ·å®ç°çš„ï¼Œä»…ä½œçºªå¿µ
 	for(k = 0; k < 6; k++)
 	{
-		BTK05_ATKeyDataPack[6 + k] = ATKeyData[k].ATKeyData;//¸üĞÂÆÕÍ¨°´¼ü
+		BTK05_ATKeyDataPack[6 + k] = ATKeyData[k].ATKeyData;//æ›´æ–°æ™®é€šæŒ‰é”®
 	}
 }
 
@@ -468,7 +433,7 @@ void myKeyBoard_ControlKeyProcess(u8 rowi, u8 colj)
 	{
 		ATKeyControlByte5 = ATKeyControlByte5 | (0x01 << 3);
 	}
-	else//Èç¹ûÒÔÉÏ¶¼Ã»ÓĞÅĞ±ğ£¬ÔòÊÇÆÕÍ¨°´¼ü£¬¸´Î»¿ØÖÆ°´¼ü±êÖ¾
+	else//å¦‚æœä»¥ä¸Šéƒ½æ²¡æœ‰åˆ¤åˆ«ï¼Œåˆ™æ˜¯æ™®é€šæŒ‰é”®ï¼Œå¤ä½æ§åˆ¶æŒ‰é”®æ ‡å¿—
 	{
 		myKeyBoard_KeyIsControl = 0;
 	}
@@ -478,7 +443,7 @@ void myKeyBoard_ControlKeyProcess(u8 rowi, u8 colj)
 void myKeyBoard_JudgeKeyStateChange()
 {
 	u8 i,j;
-	//¼ì²é¼üÅÌ×´Ì¬ÊÇ·ñ¸Ä±ä
+	//æ£€æŸ¥é”®ç›˜çŠ¶æ€æ˜¯å¦æ”¹å˜
 	for(i = 0; i < 6; i++)
 	{
 		for(j = 0; j < 16; j++)
@@ -494,12 +459,12 @@ void myKeyBoard_JudgeKeyStateChange()
 			break;
 	}
 	
-	//½«µ±Ç°µÄ¼üÅÌ×´Ì¬´«µİ¸øÉÏ´Î
+	//å°†å½“å‰çš„é”®ç›˜çŠ¶æ€ä¼ é€’ç»™ä¸Šæ¬¡
 	for(i = 0; i < 6; i++)
 	{
 		for(j = 0; j < 16; j++)
 		{
-			myKeyBoard_KeyState_Ex[i][j] = myKeyBoard_KeyState[i][j];//½«µ±Ç°µÄ¼üÅÌ×´Ì¬´«µİ¸øÉÏ´Î
+			myKeyBoard_KeyState_Ex[i][j] = myKeyBoard_KeyState[i][j];//å°†å½“å‰çš„é”®ç›˜çŠ¶æ€ä¼ é€’ç»™ä¸Šæ¬¡
 		}
 	}
 	
@@ -520,7 +485,6 @@ void myKeyBoard_KeyScan()
 		//DelayUs(6);
 	}
 }
-
 
 void myKeyBoard_KeyScan_rowScan(GPIO_TypeDef * 		col_GPIOPort, 
 								uint8_t 			col_GPIOPin_Index,
@@ -584,13 +548,13 @@ unsigned char myKeyBoard_JudgeKeyPressWithName(const char* keyName)
 	return 0;
 }
 
-//³õÊ¼»¯¼üÅÌIO
+//åˆå§‹åŒ–é”®ç›˜IO
 void myKeyBoard_GPIO_Init()
 {
 	
 	GPIO_InitTypeDef GPIOType;
 	
-	//³õÊ¼»¯ row0-row5 GPIO
+	//åˆå§‹åŒ– row0-row5 GPIO
 	GPIOType.GPIO_Pin = myKeyBoard_row0_GPIOPin | 
 						myKeyBoard_row1_GPIOPin | 
 						myKeyBoard_row2_GPIOPin | 
@@ -599,20 +563,20 @@ void myKeyBoard_GPIO_Init()
 						myKeyBoard_row5_GPIOPin;
 	
 	GPIOType.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIOType.GPIO_Mode = GPIO_Mode_IPD; //ÏÂÀ­ÊäÈë
+	GPIOType.GPIO_Mode = GPIO_Mode_IPD; //ä¸‹æ‹‰è¾“å…¥
 	GPIO_Init(myKeyBoard_row_GPIOPort , &GPIOType);
 	
-	//³õÊ¼»¯ col0-col3 GPIO
+	//åˆå§‹åŒ– col0-col3 GPIO
 	GPIOType.GPIO_Pin = myKeyBoard_col0_GPIOPin | 
 						myKeyBoard_col1_GPIOPin | 
 						myKeyBoard_col2_GPIOPin | 
 						myKeyBoard_col3_GPIOPin ;
 
 	GPIOType.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIOType.GPIO_Mode = GPIO_Mode_Out_PP;		//ÍÆÍìÊä³ö
+	GPIOType.GPIO_Mode = GPIO_Mode_Out_PP;		//æ¨æŒ½è¾“å‡º
 	GPIO_Init(myKeyBoard_col3_0_GPIOPort , &GPIOType);
 	
-	//³õÊ¼»¯ col4-col15 GPIO
+	//åˆå§‹åŒ– col4-col15 GPIO
 	GPIOType.GPIO_Pin = myKeyBoard_col4_GPIOPin | 
 						myKeyBoard_col5_GPIOPin | 
 						myKeyBoard_col6_GPIOPin | 
@@ -627,7 +591,7 @@ void myKeyBoard_GPIO_Init()
 						myKeyBoard_col15_GPIOPin ;
 						
 	GPIOType.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIOType.GPIO_Mode = GPIO_Mode_Out_PP;		//ÍÆÍìÊä³ö
+	GPIOType.GPIO_Mode = GPIO_Mode_Out_PP;		//æ¨æŒ½è¾“å‡º
 	GPIO_Init(myKeyBoard_col15_4_GPIOPort , &GPIOType);
 
 }
