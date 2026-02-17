@@ -72,7 +72,7 @@ int main()
 		else//蓝牙模块模式
 		{
 			// 一段时间后没有按下任何按键，则进入休眠状态
-			if(sleepTime1SCounter > 70 && BTK05_Status == BTK_WAKE)   
+			if(sleepTime1SCounter > 77 && BTK05_Status == BTK_WAKE)   
 			{				
 				//进入休眠模式...
 				BTK05_Sleep();           // 休眠BTK05

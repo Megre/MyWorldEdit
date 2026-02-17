@@ -24,10 +24,6 @@ extern unsigned char g_Flag;
 extern bool g_USBModeFlag;
 extern unsigned char LED_LOGOENBreath_Flag ;
 
-
-
-
-
 //void LED_LOGO_FLASH_3TIMES(void);
 void BLUETEETH_Mode(void);
 void USB_Mode(void);
