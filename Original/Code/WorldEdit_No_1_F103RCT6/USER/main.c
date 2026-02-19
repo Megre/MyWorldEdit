@@ -12,12 +12,13 @@ unsigned char sleepTime50MsCounter = 0;
 unsigned char LED_breath_Flag = 0;
 unsigned char LED_LOGOBreath_Flag = 0;
 unsigned char LED_LOGOENBreath_Flag = 0;
-unsigned char system_Status = 1;  //1:运行中，0：休眠中
+unsigned char system_Status = 1;  	// 1:运行中，0：休眠中
 unsigned char g_Flag = 0;
 uint8_t ledLogoPWM = 80;
 int8_t ledLogoPWMDelt = 0;
 bool g_USBModeFlag = FALSE;
 bool g_startUSBConfigStableTimer = FALSE;
+static uint32_t g_sleepTimeout = 17; // 秒
 
 int main()
 {
@@ -72,7 +73,7 @@ int main()
 		else//蓝牙模块模式
 		{
 			// 一段时间后没有按下任何按键，则进入休眠状态
-			if(sleepTime1SCounter > 77 && BTK05_Status == BTK_WAKE)   
+			if(sleepTime1SCounter >= g_sleepTimeout && BTK05_Status == BTK_WAKE)   
 			{				
 				//进入休眠模式...
 				BTK05_Sleep();           // 休眠BTK05
@@ -89,9 +90,8 @@ int main()
 				system_Status = 1;  		// 恢复工作状态
 				sleepTime1SCounter = 0; // 清除休眠计时
 			}
-
-			//如果键盘休眠计时器小于400并且键盘处于醒着的状态
-			if(BTK05_Status == BTK_WAKE)
+			//如果键盘处于醒着的状态
+			else if(sleepTime1SCounter < g_sleepTimeout && BTK05_Status == BTK_WAKE)
 			{
 				myKeyBoard_ScanKeyAndUpdataATBuffer();//键盘事件更新
 				if(g_myKeyBoard_DataWaitForUploadFlag == 1)
