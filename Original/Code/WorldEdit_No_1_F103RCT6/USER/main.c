@@ -18,12 +18,13 @@ uint8_t ledLogoPWM = 80;
 int8_t ledLogoPWMDelt = 0;
 bool g_USBModeFlag = FALSE;
 bool g_startUSBConfigStableTimer = FALSE;
-static uint32_t g_sleepTimeout = 17; // 秒
+static uint32_t g_sleepTimeout = 27; // 秒
 
 int main()
 {
 	sysInit();	
-	BTK05_Wake();
+	BTK05_Wake();	
+	Turn_On_State_LEDs(1);
 
 	while(1)
 	{ 

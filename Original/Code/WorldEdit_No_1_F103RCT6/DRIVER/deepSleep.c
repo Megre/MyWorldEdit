@@ -25,15 +25,6 @@ void Enter_Deep_Sleep(void)
     if (g_InDeepSleep) return;
     g_InDeepSleep = 1;
 
-    // ----- 配置验证引脚 PB8 为推挽输出低 -----
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    GPIO_InitTypeDef gpio_pb8;
-    gpio_pb8.GPIO_Pin = GPIO_Pin_8;
-    gpio_pb8.GPIO_Mode = GPIO_Mode_Out_PP;
-    gpio_pb8.GPIO_Speed = GPIO_Speed_2MHz;
-    GPIO_Init(GPIOB, &gpio_pb8);
-    GPIO_ResetBits(GPIOB, GPIO_Pin_8); // 输出低
-
     __enable_irq();
 
     // ========== 配置所有列引脚为推挽输出高 ==========
@@ -123,7 +114,8 @@ void Enter_Deep_Sleep(void)
 //    GPIO_Init(GPIOA, &gpio_ain);
 
 			// PB: 除 PB8,12-15 外 → AIN
-			gpio_ain.GPIO_Pin = GPIO_Pin_All & ~(GPIO_Pin_8 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
+			gpio_ain.GPIO_Pin = GPIO_Pin_All & ~(GPIO_Pin_8 | GPIO_Pin_12 
+				| GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
 			GPIO_Init(GPIOB, &gpio_ain);
 
 			// PC11-PC15 → AIN
@@ -211,9 +203,7 @@ void Enter_Deep_Sleep(void)
     NVIC_DisableIRQ(EXTI9_5_IRQn);
 
     clear_keyboard_state();
-
-    // 唤醒后拉高 PB8 作为验证
-    GPIOB->BSRR = GPIO_Pin_8;
+		Turn_On_State_LEDs(1);
 
     g_InDeepSleep = 0;
 }
@@ -501,3 +491,32 @@ void Enter_Deep_Sleep_Menu(void)
     g_InDeepSleep = 0;
 }
 
+void Reset_State_LEDs(void)
+{
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+		GPIO_InitTypeDef gpio_pb8;
+		gpio_pb8.GPIO_Pin = GPIO_Pin_1;
+		gpio_pb8.GPIO_Mode = GPIO_Mode_Out_PP;
+		gpio_pb8.GPIO_Speed = GPIO_Speed_2MHz;
+		GPIO_Init(GPIOB, &gpio_pb8);
+		GPIO_ResetBits(GPIOB, GPIO_Pin_1); // 输出低
+}
+
+void Set_State_LEDs_AIN(void)
+{
+	GPIO_InitTypeDef gpio_ain;
+	gpio_ain.GPIO_Mode = GPIO_Mode_AIN;
+	gpio_ain.GPIO_Speed = GPIO_Speed_2MHz;
+	gpio_ain.GPIO_Pin = GPIO_Pin_1;
+	GPIO_Init(GPIOB, &gpio_ain);
+}
+
+void Turn_On_State_LEDs(unsigned char isOn)
+{
+	if(isOn) {
+		Reset_State_LEDs();
+	}
+	else {
+		Set_State_LEDs_AIN();
+	}
+}
